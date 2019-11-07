@@ -1,9 +1,8 @@
+const sqlite = require('sqlite')
+const passwordHash = require('pbkdf2-wrapper')
+
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
-const sqlite = require('sqlite')
-const {promisify} = require('util')
-
-const passwordHash = require('../../modules/passwordHash')
 
 function validate (data) {
   const validations = [
@@ -19,12 +18,9 @@ function validate (data) {
 async function insertUser (data) {
   const db = await sqlite.open('./data/manager.sqlite')
 
-  const password = (await
-    passwordHash.hash(data.password)
-  ).toString('hex')
+  const password = await passwordHash.hash(data.password)
 
-  const equality = await 
-    passwordHash.verify('password', Buffer.from(password, 'hex'))
+  const equality = await passwordHash.verify('password', password)
 
   await db.run(
     `INSERT INTO users (email, password) VALUES (?, ?)`,
