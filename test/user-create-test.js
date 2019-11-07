@@ -3,13 +3,13 @@ const httpRequest = require('./helpers/httpRequest')
 const reset = require('./helpers/reset')
 const server = require('../server')
 
-test('account: create a new account with validation errors', async t => {
+test('user: create a new user with validation errors', async t => {
   t.plan(2)
   await reset()
 
   await server.start()
 
-  const response = await httpRequest('/api/accounts', {
+  const response = await httpRequest('/api/users', {
     method: 'post'
   })
 
@@ -25,13 +25,13 @@ test('account: create a new account with validation errors', async t => {
   await server.stop()
 })
 
-test('account: create a new account', async t => {
+test('user: create a new user', async t => {
   t.plan(2)
   await reset()
 
   await server.start()
 
-  const response = await httpRequest('/api/accounts', {
+  const response = await httpRequest('/api/users', {
     method: 'post',
     data: {
       email: 'test@example.com',

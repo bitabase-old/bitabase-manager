@@ -1,11 +1,12 @@
 const { promisify } = require('util')
 const fs = require('fs')
 const path = require('path')
-const sqlite = require('sqlite')
 
 const writeFile = promisify(fs.writeFile)
 
 const validate = require('./validate')
+const connect = require('../../../modules/db')
+const ensureDirectoryExists = require('../../../modules/ensureDirectoryExists')
 const parseJsonBody = require('../../../modules/parseJsonBody')
 
 function sendError (statusCode, message, res) {
@@ -43,6 +44,8 @@ module.exports = async function (req, res, params) {
   // Configuration
   const configFile = path.resolve(__dirname, '../../../data', `example/${data.id}.json`)
 
+  await ensureDirectoryExists(configFile, { resolve: true })
+
   const existingConfig = await getConfig(configFile)
   if (existingConfig) {
     return sendError(422, { errors: { id: 'already taken' } }, res)
@@ -51,7 +54,7 @@ module.exports = async function (req, res, params) {
   await writeFile(configFile, JSON.stringify(data))
 
   // Create db
-  const db = await sqlite(`example/${data.id}.db`)
+  const db = await connect(`example/${data.id}.db`)
 
   const fields = Object.keys(data.schema || [])
     .map(fieldKey => {

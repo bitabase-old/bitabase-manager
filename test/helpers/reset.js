@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const mkdirp = require('mkdirp')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -9,7 +10,7 @@ module.exports = function () {
       if (err) {
         return reject(err)
       }
-      resolve()
+      mkdirp(dataFolder, resolve)
     })
   })
 }

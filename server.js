@@ -1,21 +1,29 @@
 const http = require('http')
-const mainRouter = require('find-my-way')()
-const subRouter = require('find-my-way')()
+const router = require('find-my-way')()
+const migrations = require('node-mini-migrations')
+
 const config = require('./config/config')
 
-mainRouter.on('POST', '/api/accounts', require('./commands/account/create.js'))
-mainRouter.on('GET', '/api/collections', require('./commands/account/collections/search.js'))
-mainRouter.on('POST', '/api/collections', require('./commands/account/collections/create.js'))
-mainRouter.on('PUT', '/api/collections/:collectionId', require('./commands/account/collections/update.js'))
+router.on('POST', '/api/users', require('./commands/user/create.js'))
+router.on('GET', '/api/collections', require('./commands/account/collections/search.js'))
+router.on('POST', '/api/collections', require('./commands/account/collections/create.js'))
+router.on('PUT', '/api/collections/:collectionId', require('./commands/account/collections/update.js'))
+
+function migrateUp () {
+  return migrations.up(
+    migrations. prepareRun('./migrations')
+  )
+}
 
 let server
-function start () {
+async function start () {
+  await migrateUp()
   server = http.createServer((req, res) => {
     if (req.headers.host === config.homeDomain) {
       if (!req.url.startsWith('/api/')) {
         require('./commands/home/index.js')(req, res)
       } else {
-        mainRouter.lookup(req, res)
+        router.lookup(req, res)
       }
     } else {
       subRouter.lookup(req, res)
@@ -29,4 +37,8 @@ function stop () {
   server.close()
 }
 
-module.exports = { start, stop }
+module.exports = {
+  migrateUp,
+  start,
+  stop
+}
