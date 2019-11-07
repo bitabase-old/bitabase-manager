@@ -1,13 +1,9 @@
 const http = require('http')
-const router = require('find-my-way')()
+const findMyWay = require('find-my-way')
 const migrations = require('node-mini-migrations')
+const sqlite = require('sqlite')
 
 const config = require('./config/config')
-
-router.on('POST', '/api/users', require('./commands/user/create.js'))
-router.on('GET', '/api/collections', require('./commands/account/collections/search.js'))
-router.on('POST', '/api/collections', require('./commands/account/collections/create.js'))
-router.on('PUT', '/api/collections/:collectionId', require('./commands/account/collections/update.js'))
 
 function migrateUp () {
   return migrations.up(
@@ -18,6 +14,13 @@ function migrateUp () {
 let server
 async function start () {
   await migrateUp()
+
+  const db = await sqlite.open('./data/manager.sqlite')
+
+  const router = findMyWay()
+  router.on('POST', '/api/users', require('./commands/user/create.js')({db}))
+  router.on('POST', '/api/databases', require('./commands/database/create.js')({db}))
+
   server = http.createServer((req, res) => {
     if (req.headers.host === config.homeDomain) {
       if (!req.url.startsWith('/api/')) {

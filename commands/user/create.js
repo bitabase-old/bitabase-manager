@@ -15,9 +15,7 @@ function validate (data) {
   }
 }
 
-async function insertUser (data) {
-  const db = await sqlite.open('./data/manager.sqlite')
-
+async function insertUser (db, data) {
   const password = await passwordHash.hash(data.password)
 
   const equality = await passwordHash.verify('password', password)
@@ -26,26 +24,25 @@ async function insertUser (data) {
     `INSERT INTO users (email, password) VALUES (?, ?)`,
     [data.email, password]
   )
-  await db.close()
-
-  return true
 }
 
-module.exports = async function (req, res, params) {
-  try {
-    const data = await parseJsonBody(req)
+module.exports = function ({db}) {
+  return async function (req, res, params) {
+    try {
+      const data = await parseJsonBody(req)
 
-    const errors = validate(data)
+      const errors = validate(data)
 
-    if (errors) {
-      return sendJsonResponse(422, { errors }, res)
+      if (errors) {
+        return sendJsonResponse(422, { errors }, res)
+      }
+
+      await insertUser(db, data)
+
+      sendJsonResponse(200, { email: data.email }, res)
+    } catch (error) {
+      console.log(error)
+      sendJsonResponse(500, {}, res)
     }
-
-    await insertUser(data)
-
-    sendJsonResponse(200, { email: data.email }, res)
-  } catch (error) {
-    console.log(error)
-    sendJsonResponse(500, {}, res)
   }
 }
