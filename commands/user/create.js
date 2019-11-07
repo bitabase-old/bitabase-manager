@@ -1,6 +1,9 @@
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
 const sqlite = require('sqlite')
+const {promisify} = require('util')
+
+const passwordHash = require('../../modules/passwordHash')
 
 function validate (data) {
   const validations = [
@@ -13,25 +16,40 @@ function validate (data) {
   }
 }
 
-async function createUser (data) {
+async function insertUser (data) {
   const db = await sqlite.open('./data/manager.sqlite')
 
-  await db.run(`CREATE TABLE users (id INT, email TEXT, password TEXT)`)
+  const password = (await
+    passwordHash.hash(data.password)
+  ).toString('hex')
+
+  const equality = await 
+    passwordHash.verify('password', Buffer.from(password, 'hex'))
+
+  await db.run(
+    `INSERT INTO users (email, password) VALUES (?, ?)`,
+    [data.email, password]
+  )
   await db.close()
 
   return true
 }
 
 module.exports = async function (req, res, params) {
-  const data = await parseJsonBody(req)
+  try {
+    const data = await parseJsonBody(req)
 
-  const errors = validate(data)
+    const errors = validate(data)
 
-  if (errors) {
-    return sendJsonResponse(422, { errors }, res)
+    if (errors) {
+      return sendJsonResponse(422, { errors }, res)
+    }
+
+    await insertUser(data)
+
+    sendJsonResponse(200, { email: data.email }, res)
+  } catch (error) {
+    console.log(error)
+    sendJsonResponse(500, {}, res)
   }
-
-  createUser(data)
-
-  sendJsonResponse(200, { email: data.email }, res)
 }
