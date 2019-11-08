@@ -1,5 +1,5 @@
 const sqlite = require('sqlite')
-const passwordHash = require('pbkdf2-wrapper')
+const hashText = require('pbkdf2-wrapper/hashText')
 
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
@@ -16,9 +16,7 @@ function validate (data) {
 }
 
 async function insertUser (db, data) {
-  const password = await passwordHash.hash(data.password)
-
-  const equality = await passwordHash.verify('password', password)
+  const password = await hashText(data.password)
 
   await db.run(
     `INSERT INTO users (email, password) VALUES (?, ?)`,
@@ -32,7 +30,6 @@ module.exports = function ({db}) {
       const data = await parseJsonBody(req)
 
       const errors = validate(data)
-
       if (errors) {
         return sendJsonResponse(422, { errors }, res)
       }

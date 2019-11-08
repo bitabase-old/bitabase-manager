@@ -19,6 +19,7 @@ async function start () {
 
   const router = findMyWay()
   router.on('POST', '/api/users', require('./commands/user/create.js')({db}))
+  router.on('POST', '/api/sessions', require('./commands/session/create.js')({db}))
   router.on('POST', '/api/databases', require('./commands/database/create.js')({db}))
 
   server = http.createServer((req, res) => {
