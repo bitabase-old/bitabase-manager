@@ -19,8 +19,8 @@ async function insertUser (db, data) {
   const password = await hashText(data.password)
 
   await db.run(
-    'INSERT INTO users (id, email, password) VALUES (?, ?, ?)',
-    [data.id, data.email, password]
+    'INSERT INTO users (id, email, password, date_created) VALUES (?, ?, ?, ?)',
+    [data.id, data.email, password, Date.now()]
   )
 }
 

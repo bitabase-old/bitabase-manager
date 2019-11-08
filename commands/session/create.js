@@ -18,8 +18,8 @@ function validate (data) {
 
 function insertSession (db, { sessionId, sessionSecret, userId }) {
   return db.run(
-    'INSERT INTO sessions (id, secret, user_id) VALUES (?, ?, ?)',
-    [sessionId, sessionSecret, userId]
+    'INSERT INTO sessions (id, secret, user_id, date_created) VALUES (?, ?, ?, ?)',
+    [sessionId, sessionSecret, userId, Date.now()]
   )
 }
 
