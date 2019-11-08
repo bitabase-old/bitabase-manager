@@ -1,4 +1,3 @@
-const sqlite = require('sqlite')
 const hashText = require('pbkdf2-wrapper/hashText')
 
 const parseJsonBody = require('../../modules/parseJsonBody')
@@ -19,12 +18,12 @@ async function insertUser (db, data) {
   const password = await hashText(data.password)
 
   await db.run(
-    `INSERT INTO users (email, password) VALUES (?, ?)`,
+    'INSERT INTO users (email, password) VALUES (?, ?)',
     [data.email, password]
   )
 }
 
-module.exports = function ({db}) {
+module.exports = function ({ db }) {
   return async function (req, res, params) {
     try {
       const data = await parseJsonBody(req)

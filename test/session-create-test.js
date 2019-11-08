@@ -83,7 +83,7 @@ test('session: create a new session correct user but wrong password', async t =>
 })
 
 test('session: create a new session correct user and password', async t => {
-  t.plan(3)
+  t.plan(4)
   await reset()
 
   await server.start()
@@ -101,6 +101,7 @@ test('session: create a new session correct user and password', async t => {
   t.equal(response.status, 200)
   t.equal(response.data.sessionId.length, 32)
   t.equal(response.data.sessionSecret.length, 64)
+  t.ok(response.data.user)
 
   await server.stop()
 })

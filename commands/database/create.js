@@ -1,10 +1,8 @@
-const sqlite = require('sqlite')
-
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
 const parseSession = require('../../modules/sessions')
 
-module.exports = function ({db}) {
+module.exports = function ({ db }) {
   return async function (req, res, params) {
     const data = await parseJsonBody(req)
     const session = await parseSession(req)

@@ -1,4 +1,3 @@
-const sqlite = require('sqlite')
 const verifyHash = require('pbkdf2-wrapper/verifyHash')
 
 const createRandomString = require('../../modules/createRandomString')
@@ -16,14 +15,14 @@ function validate (data) {
   }
 }
 
-async function insertSession (db, {sessionId, sessionSecret, userId}) {
-  return await db.run(
-    `INSERT INTO sessions (id, secret, user_id) VALUES (?, ?, ?)`,
+function insertSession (db, { sessionId, sessionSecret, userId }) {
+  return db.run(
+    'INSERT INTO sessions (id, secret, user_id) VALUES (?, ?, ?)',
     [sessionId, sessionSecret, userId]
   )
 }
 
-module.exports = function ({db}) {
+module.exports = function ({ db }) {
   return async function (req, res, params) {
     try {
       const data = await parseJsonBody(req)
@@ -33,7 +32,7 @@ module.exports = function ({db}) {
         return sendJsonResponse(422, { errors }, res)
       }
 
-      const user = await db.get(`SELECT * FROM users WHERE email = ?`, [data.email])
+      const user = await db.get('SELECT * FROM users WHERE email = ?', [data.email])
       if (!user) {
         return sendJsonResponse(401, { error: 'unauthorised' }, res)
       }
@@ -51,7 +50,9 @@ module.exports = function ({db}) {
         userId: user.id
       })
 
-      sendJsonResponse(200, { sessionId, sessionSecret }, res)
+      delete user.password
+
+      sendJsonResponse(200, { sessionId, sessionSecret, user }, res)
     } catch (error) {
       console.log(error)
       sendJsonResponse(500, {}, res)
