@@ -99,7 +99,7 @@ test('session: create a new session correct user and password', async t => {
   })
 
   t.equal(response.status, 200)
-  t.equal(response.data.sessionId.length, 32)
+  t.equal(response.data.sessionId.length, 36)
   t.equal(response.data.sessionSecret.length, 64)
   t.ok(response.data.user)
 

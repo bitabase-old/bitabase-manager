@@ -1,3 +1,4 @@
+const uuidv4 = require('uuid/v4')
 const hashText = require('pbkdf2-wrapper/hashText')
 
 const parseJsonBody = require('../../modules/parseJsonBody')
@@ -18,8 +19,8 @@ async function insertUser (db, data) {
   const password = await hashText(data.password)
 
   await db.run(
-    'INSERT INTO users (email, password) VALUES (?, ?)',
-    [data.email, password]
+    'INSERT INTO users (id, email, password) VALUES (?, ?, ?)',
+    [data.id, data.email, password]
   )
 }
 
@@ -33,9 +34,10 @@ module.exports = function ({ db }) {
         return sendJsonResponse(422, { errors }, res)
       }
 
+      data.id = uuidv4()
       await insertUser(db, data)
 
-      sendJsonResponse(200, { email: data.email }, res)
+      sendJsonResponse(200, { id: data.id, email: data.email }, res)
     } catch (error) {
       console.log(error)
       sendJsonResponse(500, {}, res)

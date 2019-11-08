@@ -26,7 +26,7 @@ test('user: create a new user with validation errors', async t => {
 })
 
 test('user: create a new user', async t => {
-  t.plan(2)
+  t.plan(3)
   await reset()
 
   await server.start()
@@ -40,10 +40,8 @@ test('user: create a new user', async t => {
   })
 
   t.equal(response.status, 200)
-
-  t.deepEqual(response.data, {
-    email: 'test@example.com'
-  })
+  t.equal(response.data.id.length, 36)
+  t.equal(response.data.email, 'test@example.com')
 
   await server.stop()
 })

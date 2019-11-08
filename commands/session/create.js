@@ -1,3 +1,4 @@
+const uuidv4 = require('uuid/v4')
 const verifyHash = require('pbkdf2-wrapper/verifyHash')
 
 const createRandomString = require('../../modules/createRandomString')
@@ -42,7 +43,7 @@ module.exports = function ({ db }) {
         return sendJsonResponse(401, { error: 'unauthorised' }, res)
       }
 
-      const sessionId = await createRandomString(32)
+      const sessionId = uuidv4()
       const sessionSecret = await createRandomString(64)
       await insertSession(db, {
         sessionId,
