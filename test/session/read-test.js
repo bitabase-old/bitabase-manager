@@ -4,7 +4,7 @@ const reset = require('../helpers/reset')
 const server = require('../../server')
 
 const createUser = (user) =>
-  httpRequest('/api/users', {
+  httpRequest('/v1/users', {
     method: 'post',
     data: user || {
       email: 'test@example.com',
@@ -13,7 +13,7 @@ const createUser = (user) =>
   })
 
 const createSession = (user) =>
-  httpRequest('/api/sessions', {
+  httpRequest('/v1/sessions', {
     method: 'post',
     data: user || {
       email: 'test@example.com',
@@ -27,7 +27,7 @@ test('session: read a not existing session', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/sessions/current', {
+  const response = await httpRequest('/v1/sessions/current', {
     method: 'get',
     headers: {
       'X-Session-Id': 'wrongid',
@@ -53,7 +53,7 @@ test('session: read an existing session with wrong secret', async t => {
   await createUser()
   const session = (await createSession()).data
 
-  const response = await httpRequest('/api/sessions/current', {
+  const response = await httpRequest('/v1/sessions/current', {
     method: 'get',
     headers: {
       'X-Session-Id': session.sessionId,
@@ -70,7 +70,6 @@ test('session: read an existing session with wrong secret', async t => {
   await server.stop()
 })
 
-
 test('session: read an existing session with correct details', async t => {
   t.plan(4)
   await reset()
@@ -80,7 +79,7 @@ test('session: read an existing session with correct details', async t => {
   const user = (await createUser()).data
   const session = (await createSession()).data
 
-  const response = await httpRequest('/api/sessions/current', {
+  const response = await httpRequest('/v1/sessions/current', {
     method: 'get',
     headers: {
       'X-Session-Id': session.sessionId,

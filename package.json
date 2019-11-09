@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index",
     "test": "tape test/**/*-test.js"
   },
   "author": "",

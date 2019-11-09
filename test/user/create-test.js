@@ -9,7 +9,7 @@ test('user: create a new user with validation errors', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/users', {
+  const response = await httpRequest('/v1/users', {
     method: 'post'
   })
 
@@ -31,7 +31,7 @@ test('user: create a new user', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/users', {
+  const response = await httpRequest('/v1/users', {
     method: 'post',
     data: {
       email: 'test@example.com',

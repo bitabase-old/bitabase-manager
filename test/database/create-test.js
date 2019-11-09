@@ -9,7 +9,7 @@ test('database: create a new database -> no session', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/databases', {
+  const response = await httpRequest('/v1/databases', {
     method: 'post',
     data: {
       name: 'testing'

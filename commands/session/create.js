@@ -4,6 +4,7 @@ const verifyHash = require('pbkdf2-wrapper/verifyHash')
 const createRandomString = require('../../modules/createRandomString')
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
+const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders')
 
 function validate (data) {
   const validations = [
@@ -24,23 +25,25 @@ function insertSession (db, { sessionId, sessionSecret, userId }) {
 }
 
 module.exports = function ({ db }) {
-  return async function (req, res, params) {
+  return async function (request, response, params) {
     try {
-      const data = await parseJsonBody(req)
+      setCrossDomainOriginHeaders(request, response)
+
+      const data = await parseJsonBody(request)
 
       const errors = validate(data)
       if (errors) {
-        return sendJsonResponse(422, { errors }, res)
+        return sendJsonResponse(422, { errors }, response)
       }
 
       const user = await db.get('SELECT * FROM users WHERE email = ?', [data.email])
       if (!user) {
-        return sendJsonResponse(401, { error: 'unauthorised' }, res)
+        return sendJsonResponse(401, { error: 'unauthorised' }, response)
       }
 
       const passwordMatch = await verifyHash(data.password, user.password)
       if (!passwordMatch) {
-        return sendJsonResponse(401, { error: 'unauthorised' }, res)
+        return sendJsonResponse(401, { error: 'unauthorised' }, response)
       }
 
       const sessionId = uuidv4()
@@ -53,10 +56,10 @@ module.exports = function ({ db }) {
 
       delete user.password
 
-      sendJsonResponse(200, { sessionId, sessionSecret, user }, res)
+      sendJsonResponse(200, { sessionId, sessionSecret, user }, response)
     } catch (error) {
       console.log(error)
-      sendJsonResponse(500, {}, res)
+      sendJsonResponse(500, {}, response)
     }
   }
 }

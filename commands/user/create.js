@@ -3,6 +3,7 @@ const hashText = require('pbkdf2-wrapper/hashText')
 
 const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
+const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders')
 
 function validate (data) {
   const validations = [
@@ -25,22 +26,24 @@ async function insertUser (db, data) {
 }
 
 module.exports = function ({ db }) {
-  return async function (req, res, params) {
+  return async function (request, response, params) {
     try {
-      const data = await parseJsonBody(req)
+      setCrossDomainOriginHeaders(request, response)
+
+      const data = await parseJsonBody(request)
 
       const errors = validate(data)
       if (errors) {
-        return sendJsonResponse(422, { errors }, res)
+        return sendJsonResponse(422, { errors }, response)
       }
 
       data.id = uuidv4()
       await insertUser(db, data)
 
-      sendJsonResponse(200, { id: data.id, email: data.email }, res)
+      sendJsonResponse(200, { id: data.id, email: data.email }, response)
     } catch (error) {
       console.log(error)
-      sendJsonResponse(500, {}, res)
+      sendJsonResponse(500, {}, response)
     }
   }
 }

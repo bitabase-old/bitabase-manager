@@ -4,7 +4,7 @@ const reset = require('../helpers/reset')
 const server = require('../../server')
 
 const createUser = () =>
-  httpRequest('/api/users', {
+  httpRequest('/v1/users', {
     method: 'post',
     data: {
       email: 'test@example.com',
@@ -18,7 +18,7 @@ test('session: create a new session with validation errors', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/sessions', {
+  const response = await httpRequest('/v1/sessions', {
     method: 'post'
   })
 
@@ -40,7 +40,7 @@ test('session: create a new session wrong user', async t => {
 
   await server.start()
 
-  const response = await httpRequest('/api/sessions', {
+  const response = await httpRequest('/v1/sessions', {
     method: 'post',
     data: {
       email: 'test@example.com',
@@ -65,7 +65,7 @@ test('session: create a new session correct user but wrong password', async t =>
 
   await createUser()
 
-  const response = await httpRequest('/api/sessions', {
+  const response = await httpRequest('/v1/sessions', {
     method: 'post',
     data: {
       email: 'test@example.com',
@@ -90,7 +90,7 @@ test('session: create a new session correct user and password', async t => {
 
   await createUser()
 
-  const response = await httpRequest('/api/sessions', {
+  const response = await httpRequest('/v1/sessions', {
     method: 'post',
     data: {
       email: 'test@example.com',

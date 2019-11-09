@@ -1,22 +1,18 @@
-const uuidv4 = require('uuid/v4')
-const verifyHash = require('pbkdf2-wrapper/verifyHash')
-
-const createRandomString = require('../../modules/createRandomString')
-const parseJsonBody = require('../../modules/parseJsonBody')
 const sendJsonResponse = require('../../modules/sendJsonResponse')
+const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders')
 
 module.exports = function ({ db }) {
-  return async function (req, res, params) {
+  return async function (request, response, params) {
     try {
-      const data = await parseJsonBody(req)
+      setCrossDomainOriginHeaders(request, response)
 
       const session = await db.get(
         'SELECT * FROM sessions WHERE id = ? AND secret = ?',
-        [req.headers['x-session-id'], req.headers['x-session-secret']]
+        [request.headers['x-session-id'], request.headers['x-session-secret']]
       )
 
       if (!session) {
-        return sendJsonResponse(401, { error: 'unauthorised' }, res)
+        return sendJsonResponse(401, { error: 'unauthorised' }, response)
       }
 
       const user = await db.get(
@@ -29,10 +25,10 @@ module.exports = function ({ db }) {
       sendJsonResponse(200, {
         sessionId: session.id,
         user
-      }, res)
+      }, response)
     } catch (error) {
       console.log(error)
-      sendJsonResponse(500, {}, res)
+      sendJsonResponse(500, {}, response)
     }
   }
 }
