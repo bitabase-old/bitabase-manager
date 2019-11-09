@@ -8,7 +8,6 @@
 This is a very early attempt at an accounts management service.
 
 ## Endpoints
-## Endpoints
 
 <table>
   <tr>
