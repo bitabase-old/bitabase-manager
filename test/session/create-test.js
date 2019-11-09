@@ -1,7 +1,7 @@
 const test = require('tape')
-const httpRequest = require('./helpers/httpRequest')
-const reset = require('./helpers/reset')
-const server = require('../server')
+const httpRequest = require('../helpers/httpRequest')
+const reset = require('../helpers/reset')
+const server = require('../../server')
 
 const createUser = () =>
   httpRequest('/api/users', {
