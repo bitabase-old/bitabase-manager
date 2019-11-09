@@ -41,7 +41,7 @@ This is a very early attempt at an accounts management service.
     <td>Create a new session by logging in</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/bitabase/bitabase-manager">2.1</a></td>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">2.2</a></td>
     <td>GET</td>
     <td>/v1/sessions/current</td>
     <td>Get the user from the current session</td>
