@@ -8,58 +8,58 @@
 This is a very early attempt at an accounts management service.
 
 ## Endpoints
-### Create a user
-> POST /users
+## Endpoints
 
-```json
-{
-  "email": "test@example.com",
-  "password": "testpassword"
-}
-```
-
-### Create a session
-> POST /sessions
-
-```json
-{
-  "email": "test@example.com",
-  "password": "testpassword"
-}
-```
-
-### Create a database
-> POST /database
-
-```json
-{
-  "name": "example",
-}
-```
-
-### Assign a user to a database
-> POST /database/users
-
-```json
-{
-  "email": "test@example.com"
-}
-```
-
-### Create a collection
-> POST /database/:databaseName/collections
-
-```json
-{
-  "id": "test",
-  "schema": {
-    "test": ["required", "string"]
-  },
-  "mutations": [
-    "data.test = concat(data.test, '-changed')"
-  ]
-}
-```
+<table>
+  <tr>
+    <th></th>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td colspan=4>
+      <strong>User</strong></br>
+      Users are entities that can login to the manager api
+    </td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">1.1</a></td>
+    <td>POST</td>
+    <td>/v1/users</td>
+    <td>Create a new user</td>
+  </tr>
+  <tr>
+    <td colspan=4>
+      <strong>Sessions</strong></br>
+      Sessions are created by users when they login
+    </td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">2.1</a></td>
+    <td>POST</td>
+    <td>/v1/sessions</td>
+    <td>Create a new session by logging in</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">2.1</a></td>
+    <td>GET</td>
+    <td>/v1/sessions/current</td>
+    <td>Get the user from the current session</td>
+  </tr>
+  <tr>
+    <td colspan=4>
+      <strong>Databases</strong></br>
+      Databases are owned by one or more users and can store multiple collections
+    </td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">3.1</a></td>
+    <td>POST</td>
+    <td>/v1/databases</td>
+    <td>Create a new session</td>
+  </tr>
+</table>
 
 ## License
 This project is licensed under the terms of the AGPL-3.0 license.
