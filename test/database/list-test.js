@@ -50,7 +50,7 @@ test('database: list databases -> not found', async t => {
 })
 
 test('database: list databases', async t => {
-  t.plan(8)
+  t.plan(9)
   await reset()
 
   await server.start()
@@ -66,6 +66,7 @@ test('database: list databases', async t => {
   t.equal(response.status, 200)
   t.equal(response.data.length, 1)
   t.equal(response.data[0].name, 'testing')
+  t.equal(response.data[0].total_collections, 0)
   t.equal(response.data[0].total_reads, 0)
   t.equal(response.data[0].total_writes, 0)
   t.equal(response.data[0].total_space, 0)
@@ -76,7 +77,7 @@ test('database: list databases', async t => {
 })
 
 test('database: list databases -> only mine', async t => {
-  t.plan(8)
+  t.plan(9)
   await reset()
 
   await server.start()
@@ -95,6 +96,7 @@ test('database: list databases -> only mine', async t => {
   t.equal(response.status, 200)
   t.equal(response.data.length, 1)
   t.equal(response.data[0].name, 'testing')
+  t.equal(response.data[0].total_collections, 0)
   t.equal(response.data[0].total_reads, 0)
   t.equal(response.data[0].total_writes, 0)
   t.equal(response.data[0].total_space, 0)

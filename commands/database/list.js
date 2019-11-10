@@ -13,22 +13,27 @@ module.exports = function ({ db }) {
     }
 
     const sql = `
-        SELECT databases.*
+        SELECT databases.id as id,
+             databases.name as name,
+             ifnull(sum(collections.total_reads), 0) as total_reads,
+             ifnull(sum(collections.total_writes), 0) as total_writes,
+             ifnull(sum(collections.total_space), 0) as total_space,
+             count(collections.id) as total_collections,
+             databases.date_created
           FROM databases
      LEFT JOIN database_users
             ON database_users.database_id = databases.id
-        WHERE database_users.user_id = ?
+     LEFT JOIN collections
+            ON collections.database_id = databases.id
+         WHERE database_users.user_id = ?
+      GROUP BY databases.id, databases.name
     `
-    const databaseRecord = await db.all(sql, [session.user.id])
-
-    if (!databaseRecord) {
-      return sendJsonResponse(404, { error: 'not found' }, response)
-    }
+    const databaseRecords = await db.all(sql, [session.user.id])
 
     response.writeHead(200, {
       'Content-Type': 'application/json'
     })
 
-    response.end(JSON.stringify(databaseRecord))
+    response.end(JSON.stringify(databaseRecords))
   }
 }
