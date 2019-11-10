@@ -71,13 +71,13 @@ This is a very early attempt at an accounts management service.
     </td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/bitabase/bitabase-manager">3.1</a></td>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">4.1</a></td>
     <td>GET</td>
     <td>/v1/databases/:databaseName/collections</td>
     <td>List all collections in a database</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/bitabase/bitabase-manager">3.2</a></td>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">4.2</a></td>
     <td>POST</td>
     <td>/v1/databases/:databaseName/collections</td>
     <td>Create a new collection in a database</td>
