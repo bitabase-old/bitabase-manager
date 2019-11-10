@@ -3,7 +3,17 @@ module.exports = {
     return Promise.all([
       db.exec('CREATE TABLE users          (id TEXT PRIMARY KEY, email TEXT, password TEXT, date_created INTEGER)'),
       db.exec('CREATE TABLE sessions       (id TEXT PRIMARY KEY, secret TEXT, user_id TEXT, date_created INTEGER)'),
-      db.exec('CREATE TABLE databases      (id TEXT PRIMARY KEY, name TEXT, schema TEXT, date_created INTEGER)'),
+      db.exec(`
+        CREATE TABLE databases (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          schema TEXT,
+          total_reads INTEGER DEFAULT 0,
+          total_writes INTEGER DEFAULT 0,
+          total_space INTEGER DEFAULT 0,
+          date_created INTEGER
+        )
+      `),
       db.exec('CREATE TABLE database_users (id TEXT PRIMARY KEY, user_id TEXT, database_id TEXT, role TEXT, date_created INTEGER)')
     ])
   },
