@@ -1,5 +1,6 @@
 const config = {
   dev: {
+    dataPath: './data',
     port: 8081,
     allowedCrossOriginDomains: [
       'http://localhost:8080'
@@ -7,6 +8,7 @@ const config = {
   },
 
   production: {
+    dataPath: '/var/data',
     port: 80,
     allowedCrossOriginDomains: [
       'https://bitabase.com',

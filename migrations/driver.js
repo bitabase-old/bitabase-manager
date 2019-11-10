@@ -1,11 +1,14 @@
+const path = require('path')
+
 const sqlite = require('sqlite')
+const config = require('../config')
 
 module.exports = function () {
   let db
 
   return {
     init: async () => {
-      db = await sqlite.open('./data/manager.sqlite')
+      db = await sqlite.open(path.resolve(config.dataPath, 'manager.sqlite'))
       await db.run('CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);')
     },
 

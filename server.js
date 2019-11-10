@@ -1,4 +1,5 @@
 const http = require('http')
+const path = require('path')
 
 const mkdirp = require('mkdirp')
 const findMyWay = require('find-my-way')
@@ -16,11 +17,11 @@ function migrateUp () {
 
 let server
 async function start () {
-  mkdirp.sync('./data')
+  mkdirp.sync(config.dataPath)
 
   await migrateUp()
 
-  const db = await sqlite.open('./data/manager.sqlite')
+  const db = await sqlite.open(path.resolve(config.dataPath, 'manager.sqlite'))
 
   const router = findMyWay({
     defaultRoute: (request, response) => {
