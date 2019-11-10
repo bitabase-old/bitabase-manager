@@ -1,4 +1,6 @@
 const http = require('http')
+
+const mkdirp = require('mkdirp')
 const findMyWay = require('find-my-way')
 const migrations = require('node-mini-migrations')
 const sqlite = require('sqlite')
@@ -14,6 +16,8 @@ function migrateUp () {
 
 let server
 async function start () {
+  mkdirp.sync('./data')
+
   await migrateUp()
 
   const db = await sqlite.open('./data/manager.sqlite')
