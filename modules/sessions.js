@@ -1,5 +1,4 @@
 module.exports = async (db, request) => {
-
   if (!request.headers['x-session-id']) {
     return null
   }

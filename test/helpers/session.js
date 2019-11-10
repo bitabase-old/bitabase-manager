@@ -19,7 +19,7 @@ const createSession = (user) =>
   })
 
 const createUserAndSession = async () => {
-  const user = await createUser()
+  await createUser()
   const session = await createSession()
   return {
     asHeaders: {

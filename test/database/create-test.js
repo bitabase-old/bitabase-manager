@@ -1,7 +1,7 @@
 const test = require('tape')
 const httpRequest = require('../helpers/httpRequest')
 const reset = require('../helpers/reset')
-const {createUserAndSession} = require('../helpers/session')
+const { createUserAndSession } = require('../helpers/session')
 const server = require('../../server')
 
 test('database: create a new database -> no session', async t => {
@@ -20,7 +20,7 @@ test('database: create a new database -> no session', async t => {
   t.equal(response.status, 401)
 
   t.deepEqual(response.data, {
-    errors: { id: 'invalid session provided' }
+    errors: [ 'invalid session provided' ]
   })
 
   await server.stop()

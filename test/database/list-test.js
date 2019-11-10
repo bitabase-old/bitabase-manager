@@ -1,7 +1,7 @@
 const test = require('tape')
 const httpRequest = require('../helpers/httpRequest')
 const reset = require('../helpers/reset')
-const {createUserAndSession} = require('../helpers/session')
+const { createUserAndSession } = require('../helpers/session')
 const server = require('../../server')
 
 const createDatabase = (headers, data) =>
@@ -56,7 +56,7 @@ test('database: list databases', async t => {
   await server.start()
 
   const session = await createUserAndSession()
-  const database = await createDatabase(session.asHeaders)
+  await createDatabase(session.asHeaders)
 
   const response = await httpRequest('/v1/databases', {
     method: 'get',
@@ -83,10 +83,10 @@ test('database: list databases -> only mine', async t => {
   await server.start()
 
   const firstSession = await createUserAndSession()
-  const firstDatabase = await createDatabase(firstSession.asHeaders)  
+  await createDatabase(firstSession.asHeaders)
 
   const secondSession = await createUserAndSession()
-  const secondDatabase = await createDatabase(secondSession.asHeaders)  
+  await createDatabase(secondSession.asHeaders)
 
   const response = await httpRequest('/v1/databases', {
     method: 'get',
