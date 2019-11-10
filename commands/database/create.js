@@ -38,8 +38,8 @@ module.exports = function ({ db }) {
 
     data.id = uuidv4()
 
-    await db.run('INSERT INTO databases (id, name, schema, date_created) VALUES (?, ?, ?, ?)', [
-      data.id, data.name, JSON.stringify(data), Date.now()
+    await db.run('INSERT INTO databases (id, name, date_created) VALUES (?, ?, ?)', [
+      data.id, data.name, Date.now()
     ])
 
     await db.run('INSERT INTO database_users (user_id, database_id, role, date_created) VALUES (?, ?, ?, ?)', [
