@@ -39,6 +39,7 @@ async function start () {
   router.on('GET', '/v1/sessions/current', require('./commands/session/readCurrent.js')({ db }))
   router.on('GET', '/v1/databases', require('./commands/database/list.js')({ db }))
   router.on('POST', '/v1/databases', require('./commands/database/create.js')({ db }))
+  router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')({ db }))
 
   server = http.createServer((req, res) => {
     router.lookup(req, res)

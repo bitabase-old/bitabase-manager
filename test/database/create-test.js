@@ -20,7 +20,7 @@ test('database: create a new database -> no session', async t => {
   t.equal(response.status, 401)
 
   t.deepEqual(response.data, {
-    errors: [ 'invalid session provided' ]
+    errors: ['invalid session provided']
   })
 
   await server.stop()
