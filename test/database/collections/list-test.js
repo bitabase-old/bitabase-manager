@@ -22,7 +22,7 @@ const createCollection = (headers, data) =>
     }
   })
 
-test('database: list collections -> no session', async t => {
+test('database collections: list collections -> no session', async t => {
   t.plan(2)
   await reset()
 
@@ -39,7 +39,7 @@ test('database: list collections -> no session', async t => {
   await server.stop()
 })
 
-test('database: list databases -> not found', async t => {
+test('database collections: list databases -> not found', async t => {
   t.plan(2)
   await reset()
 
@@ -58,7 +58,7 @@ test('database: list databases -> not found', async t => {
   await server.stop()
 })
 
-test('database: list databases', async t => {
+test('database collections: list databases', async t => {
   t.plan(9)
   await reset()
 
@@ -86,7 +86,7 @@ test('database: list databases', async t => {
   await server.stop()
 })
 
-test('database: list databases -> only mine', async t => {
+test('database collections: list databases -> only mine', async t => {
   t.plan(9)
   await reset()
 

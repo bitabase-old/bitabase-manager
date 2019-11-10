@@ -7,7 +7,6 @@ module.exports = {
         CREATE TABLE databases (
           id TEXT PRIMARY KEY,
           name TEXT,
-          total_collections INTEGER DEFAULT 0,
           total_reads INTEGER DEFAULT 0,
           total_writes INTEGER DEFAULT 0,
           total_space INTEGER DEFAULT 0,

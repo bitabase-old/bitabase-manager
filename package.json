@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "test": "tape test/**/*-test.js"
+    "test": "tape 'test/**/*-test.js'"
   },
   "author": "",
   "license": "ISC",
@@ -19,9 +19,10 @@
     "node-mini-migrations": "^2.0.1",
     "pbkdf2-wrapper": "^1.1.1",
     "raw-body": "^2.4.1",
-    "serve-static": "^1.14.1",
     "sqlite": "^3.0.3",
-    "tape": "^4.11.0",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "tape": "^4.11.0"
   }
 }
