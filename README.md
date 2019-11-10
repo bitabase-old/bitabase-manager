@@ -64,6 +64,24 @@ This is a very early attempt at an accounts management service.
     <td>/v1/databases</td>
     <td>Create a new session</td>
   </tr>
+  <tr>
+    <td colspan=4>
+      <strong>Collections</strong></br>
+      Collections are owned by a database and store records
+    </td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">3.1</a></td>
+    <td>GET</td>
+    <td>/v1/databases/:databaseName/collections</td>
+    <td>List all collections in a database</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/bitabase/bitabase-manager">3.2</a></td>
+    <td>POST</td>
+    <td>/v1/databases/:databaseName/collections</td>
+    <td>Create a new collection in a database</td>
+  </tr>
 </table>
 
 ## License
