@@ -8,6 +8,7 @@ module.exports = {
           id TEXT PRIMARY KEY,
           name TEXT,
           schema TEXT,
+          total_collections INTEGER DEFAULT 0,
           total_reads INTEGER DEFAULT 0,
           total_writes INTEGER DEFAULT 0,
           total_space INTEGER DEFAULT 0,
