@@ -62,7 +62,7 @@ This is a very early attempt at an accounts management service.
     <td><a href="https://www.github.com/bitabase/bitabase-manager">3.2</a></td>
     <td>POST</td>
     <td>/v1/databases</td>
-    <td>Create a new session</td>
+    <td>Create a new database</td>
   </tr>
   <tr>
     <td colspan=4>
