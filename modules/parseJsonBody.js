@@ -1,11 +1,35 @@
-const getRawBody = require('raw-body')
+/*
+  WARNING: This needs to be replaced, it is an unsafe
+  quick implementation of something that needs much more
+  thought. Do not use in production.
+*/
 
-module.exports = async req => {
-  const body = await getRawBody(req)
+const { BaseError } = require('generic-errors')
 
-  try {
-    return JSON.parse(body)
-  } catch (error) {
-    return {}
-  }
+function parseBody (request) {
+  return new Promise((resolve, reject) => {
+    let body = []
+    request
+      .on('data', function (chunk) {
+        body.push(chunk)
+      })
+      .on('end', function () {
+        body = Buffer.concat(body).toString()
+        if (body) {
+          try {
+            body = JSON.parse(body)
+          } catch (error) {
+            reject(new BaseError({ code: 400, error, body }))
+          }
+          resolve(body)
+        }
+
+        return resolve(undefined)
+      })
+      .on('error', function (error) {
+        reject(error)
+      })
+  })
 }
+
+module.exports = parseBody

@@ -7,8 +7,8 @@ const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginH
 
 function validate (data) {
   const validations = [
-    { email: data.email ? '' : 'email is a required field' },
-    { password: data.password ? '' : 'password is a required field' }
+    { email: data && data.email ? '' : 'email is a required field' },
+    { password: data && data.password ? '' : 'password is a required field' }
   ].filter(item => !!Object.values(item)[0])
 
   if (validations.length > 0) {

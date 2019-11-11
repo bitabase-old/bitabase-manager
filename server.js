@@ -11,7 +11,7 @@ const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeade
 
 function migrateUp () {
   return migrations.up(
-    migrations.prepareRun('./migrations')
+    migrations.prepareRun(path.resolve(__dirname, './migrations'))
   )
 }
 
@@ -41,16 +41,18 @@ async function start () {
   router.on('POST', '/v1/databases', require('./commands/database/create.js')({ db }))
   router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')({ db }))
   router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')({ db }))
+  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')({ db }))
 
   server = http.createServer((req, res) => {
     router.lookup(req, res)
   }).listen(config.port)
 
-  console.log(`Listening on port ${config.port}`)
+  console.log(`[bitabase-manager] Listening on port ${config.port}`)
 }
 
 function stop () {
-  server.close()
+  console.log('[bitabase-manager] Shutting down')
+  server && server.close()
 }
 
 module.exports = {
