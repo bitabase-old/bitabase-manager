@@ -1,8 +1,8 @@
-const config = require('../config')
+const config = require('../config');
 
 const setCrossDomainOriginHeaders = (request, response) => {
   if (config.allowedCrossOriginDomains.includes(request.headers.origin)) {
-    response.setHeader('Access-Control-Allow-Origin', '*')
+    response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Headers', [
       'Origin',
       'X-Requested-With',
@@ -10,8 +10,8 @@ const setCrossDomainOriginHeaders = (request, response) => {
       'Accept',
       'X-Session-Id',
       'X-Session-Secret'
-    ].join(', '))
+    ].join(', '));
   }
-}
+};
 
-module.exports = setCrossDomainOriginHeaders
+module.exports = setCrossDomainOriginHeaders;

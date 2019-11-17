@@ -1,8 +1,8 @@
-const sendJsonResponse = require('../../../modules/sendJsonResponse')
-const parseSession = require('../../../modules/sessions')
-const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders')
+const sendJsonResponse = require('../../../modules/sendJsonResponse');
+const parseSession = require('../../../modules/sessions');
+const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders');
 
-const config = require('../../../config')
+const config = require('../../../config');
 
 module.exports = function ({ db }) {
   async function readInternal (request, response, params) {
@@ -10,11 +10,11 @@ module.exports = function ({ db }) {
         SELECT databases.*
           FROM databases
         WHERE name = ?
-    `
+    `;
 
-    const database = await db.get(sqlFindDatabase, [params.databaseName])
+    const database = await db.get(sqlFindDatabase, [params.databaseName]);
     if (!database) {
-      return sendJsonResponse(404, { error: 'database not found' }, response)
+      return sendJsonResponse(404, { error: 'database not found' }, response);
     }
 
     const sqlFindCollections = `
@@ -22,27 +22,27 @@ module.exports = function ({ db }) {
           FROM collections
         WHERE database_id = ?
           AND name = ?
-    `
+    `;
 
-    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName])
+    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName]);
 
     if (!collection) {
-      return sendJsonResponse(404, { error: 'database not found' }, response)
+      return sendJsonResponse(404, { error: 'database not found' }, response);
     }
 
     response.writeHead(200, {
       'Content-Type': 'application/json'
-    })
-    response.end(JSON.stringify(collection))
+    });
+    response.end(JSON.stringify(collection));
   }
 
   async function read (request, response, params) {
-    setCrossDomainOriginHeaders(request, response)
+    setCrossDomainOriginHeaders(request, response);
 
-    const session = await parseSession(db, request)
+    const session = await parseSession(db, request);
 
     if (!session) {
-      return sendJsonResponse(401, { errors: ['invalid session provided'] }, response)
+      return sendJsonResponse(401, { errors: ['invalid session provided'] }, response);
     }
 
     const sqlFindDatabase = `
@@ -52,11 +52,11 @@ module.exports = function ({ db }) {
             ON database_users.database_id = databases.id
         WHERE name = ?
           AND database_users.user_id = ?
-    `
+    `;
 
-    const database = await db.get(sqlFindDatabase, [params.databaseName, session.user.id])
+    const database = await db.get(sqlFindDatabase, [params.databaseName, session.user.id]);
     if (!database) {
-      return sendJsonResponse(404, { error: 'database not found' }, response)
+      return sendJsonResponse(404, { error: 'database not found' }, response);
     }
 
     const sqlFindCollections = `
@@ -64,21 +64,21 @@ module.exports = function ({ db }) {
           FROM collections
         WHERE database_id = ?
           AND name = ?
-    `
+    `;
 
-    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName])
+    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName]);
 
     response.writeHead(200, {
       'Content-Type': 'application/json'
-    })
-    response.end(JSON.stringify(collection))
+    });
+    response.end(JSON.stringify(collection));
   }
 
   return function (request, response, params) {
     if (request.headers['x-internal-secret'] === config.secret) {
-      readInternal(request, response, params)
+      readInternal(request, response, params);
     } else {
-      read(request, response, params)
+      read(request, response, params);
     }
-  }
-}
+  };
+};

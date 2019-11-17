@@ -13,12 +13,12 @@ module.exports = {
           date_created INTEGER
         )
       `)
-    ])
+    ]);
   },
 
   down: db => {
     return Promise.all([
       db.exec('DROP TABLE collections')
-    ])
+    ]);
   }
-}
+};

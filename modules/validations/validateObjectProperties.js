@@ -1,27 +1,27 @@
 const validateObjectProperties = (object, key, validators) => {
-  const results = []
+  const results = [];
 
   if (!object[key]) {
-    return
+    return;
   }
 
   if (typeof object[key] !== 'object') {
-    return { [key]: 'must be an object' }
+    return { [key]: 'must be an object' };
   }
 
   validators.forEach(validator => {
     Object.keys(object[key])
       .filter(subKey => {
-        const result = validator(object[key], subKey)
+        const result = validator(object[key], subKey);
         if (result) {
-          results.push(result)
+          results.push(result);
         }
-      })
-  })
+      });
+  });
 
   if (results.length > 0) {
-    return { [key]: results }
+    return { [key]: results };
   }
-}
+};
 
-module.exports = validateObjectProperties
+module.exports = validateObjectProperties;

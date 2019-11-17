@@ -1,15 +1,15 @@
-const sendJsonResponse = require('../../modules/sendJsonResponse')
-const parseSession = require('../../modules/sessions')
-const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders')
+const sendJsonResponse = require('../../modules/sendJsonResponse');
+const parseSession = require('../../modules/sessions');
+const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders');
 
 module.exports = function ({ db }) {
   return async function (request, response, params) {
-    setCrossDomainOriginHeaders(request, response)
+    setCrossDomainOriginHeaders(request, response);
 
-    const session = await parseSession(db, request)
+    const session = await parseSession(db, request);
 
     if (!session) {
-      return sendJsonResponse(401, { errors: { id: 'invalid session provided' } }, response)
+      return sendJsonResponse(401, { errors: { id: 'invalid session provided' } }, response);
     }
 
     const sql = `
@@ -27,13 +27,13 @@ module.exports = function ({ db }) {
             ON collections.database_id = databases.id
          WHERE database_users.user_id = ?
       GROUP BY databases.id, databases.name
-    `
-    const databaseRecords = await db.all(sql, [session.user.id])
+    `;
+    const databaseRecords = await db.all(sql, [session.user.id]);
 
     response.writeHead(200, {
       'Content-Type': 'application/json'
-    })
+    });
 
-    response.end(JSON.stringify(databaseRecords))
-  }
-}
+    response.end(JSON.stringify(databaseRecords));
+  };
+};

@@ -1,16 +1,16 @@
 const validateArrayOfStrings = (object, key) => {
   if (!object[key]) {
-    return
+    return;
   }
 
   const items = object[key]
     .filter(subKey => {
-      return typeof subKey !== 'string'
-    })
+      return typeof subKey !== 'string';
+    });
 
   if (items.length > 0) {
-    return `${key} must be an array of strings`
+    return `${key} must be an array of strings`;
   }
-}
+};
 
-module.exports = validateArrayOfStrings
+module.exports = validateArrayOfStrings;

@@ -4,6 +4,7 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/bitabase/bitabase-manager)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/bitabase/bitabase-manager)](https://github.com/bitabase/bitabase-manager/blob/master/package.json)
 [![GitHub](https://img.shields.io/github/license/bitabase/bitabase-manager)](https://github.com/bitabase/bitabase-manager/blob/master/LICENSE)
+[![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/standard/semistandard)
 
 This is a very early attempt at an accounts management service.
 

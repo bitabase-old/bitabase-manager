@@ -14,7 +14,7 @@ module.exports = {
         )
       `),
       db.exec('CREATE TABLE database_users (id TEXT PRIMARY KEY, user_id TEXT, database_id TEXT, role TEXT, date_created INTEGER)')
-    ])
+    ]);
   },
 
   down: db => {
@@ -23,6 +23,6 @@ module.exports = {
       db.exec('DROP TABLE databases'),
       db.exec('DROP TABLE sessions'),
       db.exec('DROP TABLE users')
-    ])
+    ]);
   }
-}
+};
