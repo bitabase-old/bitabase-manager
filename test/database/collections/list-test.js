@@ -13,7 +13,7 @@ const createDatabase = (headers, data) =>
     }
   })
 
-const createCollection = (headers, data) => 
+const createCollection = (headers, data) =>
   httpRequest('/v1/databases/testing/collections', {
     method: 'post',
     headers,

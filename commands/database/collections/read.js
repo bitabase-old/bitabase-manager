@@ -1,5 +1,3 @@
-const uuidv4 = require('uuid/v4')
-const parseJsonBody = require('../../../modules/parseJsonBody')
 const sendJsonResponse = require('../../../modules/sendJsonResponse')
 const parseSession = require('../../../modules/sessions')
 const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders')
@@ -41,7 +39,6 @@ module.exports = function ({ db }) {
   async function read (request, response, params) {
     setCrossDomainOriginHeaders(request, response)
 
-    const data = await parseJsonBody(request)
     const session = await parseSession(db, request)
 
     if (!session) {
