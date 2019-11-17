@@ -28,6 +28,10 @@ module.exports = function ({ db }) {
 
     const collection = await db.get(sqlFindCollections, [database.id, params.collectionName])
 
+    if (!collection) {
+      return sendJsonResponse(404, { error: 'database not found' }, response)
+    }
+
     response.writeHead(200, {
       'Content-Type': 'application/json'
     })
