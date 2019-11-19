@@ -56,6 +56,25 @@ test('database collections: create a new collection -> no database', async t => 
   await server.stop();
 });
 
+test('database collections: create a new collection -> no post body', async t => {
+  t.plan(2);
+  await reset();
+
+  await server.start();
+
+  const session = await createUserAndSession();
+
+  const response = await httpRequest('/v1/databases/unknown/collections', {
+    method: 'post',
+    headers: session.asHeaders
+  });
+
+  t.equal(response.status, 422);
+  t.ok(response.data.errors.body, 'no post body was provided');
+
+  await server.stop();
+});
+
 test('database collections: create a new collection', async t => {
   t.plan(3);
   await reset();

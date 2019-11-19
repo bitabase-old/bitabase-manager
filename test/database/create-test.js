@@ -26,6 +26,25 @@ test('database: create a new database -> no session', async t => {
   await server.stop();
 });
 
+test('database: create a new database -> no post body', async t => {
+  t.plan(2);
+  await reset();
+
+  await server.start();
+
+  const session = await createUserAndSession();
+
+  const response = await httpRequest('/v1/databases', {
+    method: 'post',
+    headers: session.asHeaders
+  });
+
+  t.equal(response.status, 422);
+  t.ok(response.data.errors.body, 'no post body was provided');
+
+  await server.stop();
+});
+
 test('database: create a new database', async t => {
   t.plan(3);
   await reset();
