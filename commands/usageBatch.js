@@ -15,6 +15,9 @@ module.exports = function ({ config, db }) {
       const promises = Object.keys(data).map(async eventType => {
         const [databaseName, collectionName, type] = eventType.split(':');
         const amount = data[eventType];
+        if (!databaseName || !collectionName || !type || !amount) {
+          return console.log('Error: parsing usageBatch:', { databaseName, collectionName, type, amount });
+        }
 
         let columnToUpdate;
         if (type === 'write') {

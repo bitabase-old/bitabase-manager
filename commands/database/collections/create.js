@@ -5,6 +5,9 @@ const parseSession = require('../../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders');
 
 function validate (data) {
+  if (!data) {
+    return { body: 'no post body was provided' };
+  }
   const validations = [
     { name: data.name && !data.name.match(/[^a-z0-9]/gi, '') ? '' : 'name must only contain letters and numbers' },
     { name: data.name ? '' : 'name is a required field' }

@@ -49,3 +49,33 @@ test('database: create a new database', async t => {
 
   await server.stop();
 });
+
+test('database: create a new database -> duplicate name', async t => {
+  t.plan(2);
+  await reset();
+
+  await server.start();
+
+  const session = await createUserAndSession();
+
+  await httpRequest('/v1/databases', {
+    method: 'post',
+    headers: session.asHeaders,
+    data: {
+      name: 'testing'
+    }
+  });
+
+  const response = await httpRequest('/v1/databases', {
+    method: 'post',
+    headers: session.asHeaders,
+    data: {
+      name: 'testing'
+    }
+  });
+
+  t.equal(response.status, 422);
+  t.equal(response.data.errors.name, 'name has already been taken');
+
+  await server.stop();
+});
