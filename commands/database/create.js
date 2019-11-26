@@ -9,7 +9,7 @@ function validate (data) {
     return { body: 'no post body was provided' };
   }
   const validations = [
-    { name: data.name && !data.name.match(/[^a-z0-9]/gi, '') ? '' : 'name must only contain letters and numbers' },
+    { name: data.name && !data.name.match(/[^a-z0-9-]/gi, '') ? '' : 'name must only contain letters and numbers' },
     { name: data.name ? '' : 'name is a required field' }
   ].filter(item => !!Object.values(item)[0]);
 
