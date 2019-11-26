@@ -10,6 +10,8 @@ function validate (data) {
   }
   const validations = [
     { name: data.name && !data.name.match(/[^a-z0-9-]/gi, '') ? '' : 'name must only contain letters and numbers' },
+    { name: data.name && !data.name.startsWith('-') ? '' : 'name must not start with a dash' },
+    { name: data.name && !data.name.endsWith('-') ? '' : 'name must not end with a dash' },
     { name: data.name ? '' : 'name is a required field' }
   ].filter(item => !!Object.values(item)[0]);
 
