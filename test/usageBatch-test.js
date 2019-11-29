@@ -46,8 +46,8 @@ test('usageBatch: send batch -> database not exist', async t => {
     headers: firstSession.asHeaders
   });
 
-  t.equal(collectionRead.data.total_reads, 0);
-  t.equal(collectionRead.data.total_writes, 0);
+  t.equal(collectionRead.data.statistics.total_reads, 0);
+  t.equal(collectionRead.data.statistics.total_writes, 0);
 
   t.equal(response.status, 200);
 
@@ -79,8 +79,8 @@ test('usageBatch: send batch for one database', async t => {
     headers: firstSession.asHeaders
   });
 
-  t.equal(collectionRead.data.total_reads, 50);
-  t.equal(collectionRead.data.total_writes, 5);
+  t.equal(collectionRead.data.statistics.total_reads, 50);
+  t.equal(collectionRead.data.statistics.total_writes, 5);
 
   t.equal(response.status, 200);
 
@@ -118,15 +118,15 @@ test('usageBatch: send batch with two databases', async t => {
     headers: firstSession.asHeaders
   });
 
-  t.equal(firstCollectionRead.data.total_reads, 50);
-  t.equal(firstCollectionRead.data.total_writes, 5);
+  t.equal(firstCollectionRead.data.statistics.total_reads, 50);
+  t.equal(firstCollectionRead.data.statistics.total_writes, 5);
 
   const secondCollectionRead = await httpRequest('/v1/databases/testdb2/collections/testcl2', {
     headers: secondSession.asHeaders
   });
 
-  t.equal(secondCollectionRead.data.total_reads, 150);
-  t.equal(secondCollectionRead.data.total_writes, 15);
+  t.equal(secondCollectionRead.data.statistics.total_reads, 150);
+  t.equal(secondCollectionRead.data.statistics.total_writes, 15);
 
   t.equal(response.status, 200);
 

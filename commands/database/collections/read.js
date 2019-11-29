@@ -2,6 +2,8 @@ const sendJsonResponse = require('../../../modules/sendJsonResponse');
 const parseSession = require('../../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders');
 
+const presentCollection = require('./present');
+
 const config = require('../../../config');
 
 module.exports = function ({ db }) {
@@ -75,7 +77,7 @@ module.exports = function ({ db }) {
     response.writeHead(200, {
       'Content-Type': 'application/json'
     });
-    response.end(JSON.stringify(collection));
+    response.end(JSON.stringify(presentCollection(collection)));
   }
 
   return function (request, response, params) {

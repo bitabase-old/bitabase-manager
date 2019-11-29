@@ -39,7 +39,7 @@ test('database collections: list collections -> no session', async t => {
   await server.stop();
 });
 
-test('database collections: list databases -> not found', async t => {
+test('database collections: list collections -> not found', async t => {
   t.plan(2);
   await reset();
 
@@ -58,8 +58,8 @@ test('database collections: list databases -> not found', async t => {
   await server.stop();
 });
 
-test('database collections: list databases', async t => {
-  t.plan(9);
+test('database collections: list collections', async t => {
+  t.plan(8);
   await reset();
 
   await server.start();
@@ -76,18 +76,17 @@ test('database collections: list databases', async t => {
   t.equal(response.status, 200);
   t.equal(response.data.length, 1);
   t.equal(response.data[0].name, 'testing');
-  t.equal(response.data[0].total_reads, 0);
-  t.equal(response.data[0].total_writes, 0);
-  t.equal(response.data[0].total_space, 0);
+  t.equal(response.data[0].statistics.total_reads, 0);
+  t.equal(response.data[0].statistics.total_writes, 0);
+  t.equal(response.data[0].statistics.total_space, 0);
   t.ok(response.data[0].id);
-  t.ok(response.data[0].schema);
   t.ok(response.data[0].date_created);
 
   await server.stop();
 });
 
 test('database collections: list databases -> only mine', async t => {
-  t.plan(9);
+  t.plan(8);
   await reset();
 
   await server.start();
@@ -108,11 +107,10 @@ test('database collections: list databases -> only mine', async t => {
   t.equal(secondResponse.status, 200);
   t.equal(secondResponse.data.length, 1);
   t.equal(secondResponse.data[0].name, 'testing');
-  t.equal(secondResponse.data[0].total_reads, 0);
-  t.equal(secondResponse.data[0].total_writes, 0);
-  t.equal(secondResponse.data[0].total_space, 0);
+  t.equal(secondResponse.data[0].statistics.total_reads, 0);
+  t.equal(secondResponse.data[0].statistics.total_writes, 0);
+  t.equal(secondResponse.data[0].statistics.total_space, 0);
   t.ok(secondResponse.data[0].id);
-  t.ok(secondResponse.data[0].schema);
   t.ok(secondResponse.data[0].date_created);
 
   await server.stop();

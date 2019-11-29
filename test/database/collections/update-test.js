@@ -123,7 +123,7 @@ test('database collections: update existing collection', async t => {
   t.ok(updatedCollection.data.presenters, 'presenters returned from update');
   t.equal(createdCollection.data.name, 'testingcollection');
 
-  t.ok(JSON.parse(readCollection.data.schema).presenters, 'presenters existed when read collection again');
+  t.ok(readCollection.data.presenters, 'presenters existed when read collection again');
 });
 
 test('database collections: update existing collection can not change name', async t => {
