@@ -70,7 +70,7 @@ test('database collections: create a new collection -> no post body', async t =>
   });
 
   t.equal(response.status, 422);
-  t.ok(response.data.errors.body, 'no post body was provided');
+  t.equal(response.data.errors.body, 'no post body was provided');
 
   await server.stop();
 });
