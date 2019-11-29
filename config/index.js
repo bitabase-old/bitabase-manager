@@ -7,6 +7,9 @@ const config = {
     port: 8081,
     allowedCrossOriginDomains: [
       'http://localhost:8080'
+    ],
+    servers: [
+      'http://localhost:8000'
     ]
   },
 
@@ -17,7 +20,8 @@ const config = {
     allowedCrossOriginDomains: [
       'https://bitabase.com',
       'https://www.bitabase.com'
-    ]
+    ],
+    servers: (process.env.BB_INTERNAL_SERVERS || '').split(',').map(s => s.trim())
   }
 };
 

@@ -40,6 +40,7 @@ async function start () {
   router.on('GET', '/v1/databases', require('./commands/database/list.js')({ db }));
   router.on('POST', '/v1/databases', require('./commands/database/create.js')({ db }));
   router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')({ db }));
+  router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')({ db }));
   router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')({ db }));
   router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')({ db }));
   router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')({ config, db }));
