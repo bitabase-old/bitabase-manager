@@ -43,6 +43,7 @@ async function start () {
   router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')({ db }));
   router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')({ db }));
   router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')({ db }));
+  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName/logs', require('./commands/database/collections/logs/list.js')({ db }));
   router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')({ config, db }));
 
   server = http.createServer((req, res) => {
