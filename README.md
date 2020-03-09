@@ -87,3 +87,4 @@ This is a very early attempt at an accounts management service.
 
 ## License
 This project is licensed under the terms of the AGPL-3.0 license.
+
