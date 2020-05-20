@@ -19,7 +19,7 @@
     "mkdirp": "^0.5.2",
     "node-mini-migrations": "^2.0.1",
     "pbkdf2-wrapper": "^1.2.1",
-    "sqlite": "^3.0.3",
+    "sqlite": "^3.0.6",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
