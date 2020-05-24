@@ -14,6 +14,7 @@ let stopRqlite;
 
 test.onFinish(function () {
   stopRqlite && stopRqlite();
+  process.exit(0);
 });
 
 module.exports = async function () {
