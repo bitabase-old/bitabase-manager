@@ -1,4 +1,6 @@
 function presentCollection (record) {
+  record.schema = record.schema && record.schema.replace(/\\"/g, '"');
+
   const collectionConfig = typeof record.schema === 'object' ? record.schema : JSON.parse(record.schema);
   delete collectionConfig.name;
 

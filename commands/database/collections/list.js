@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 
 const sendJsonResponse = require('../../../modules/sendJsonResponse');
 const parseSession = require('../../../modules/sessions');
@@ -27,7 +27,7 @@ module.exports = function ({ db }) {
           AND database_users.user_id = ?
     `;
 
-    const database = await promisify(sqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
+    const database = await promisify(rqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
     if (!database) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
     }
@@ -38,7 +38,7 @@ module.exports = function ({ db }) {
         WHERE database_id = ?
     `;
 
-    const collections = await promisify(sqlite.getAll)(db, sqlFindCollections, [database.id]);
+    const collections = await promisify(rqlite.getAll)(db, sqlFindCollections, [database.id]);
 
     response.writeHead(200, {
       'Content-Type': 'application/json'

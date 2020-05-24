@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 const uuidv4 = require('uuid/v4');
 const verifyHash = require('pbkdf2-wrapper/verifyHash');
 
@@ -21,7 +21,7 @@ function validate (data) {
 }
 
 function insertSession (db, { sessionId, sessionSecret, userId }) {
-  return promisify(sqlite.run)(db,
+  return promisify(rqlite.run)(db,
     'INSERT INTO sessions (id, secret, user_id, date_created) VALUES (?, ?, ?, ?)',
     [sessionId, sessionSecret, userId, Date.now()]
   );
@@ -39,7 +39,7 @@ module.exports = function ({ db }) {
         return sendJsonResponse(422, { errors }, response);
       }
 
-      const user = await promisify(sqlite.getOne)(db, 'SELECT * FROM users WHERE email = ?', [data.email]);
+      const user = await promisify(rqlite.getOne)(db, 'SELECT * FROM users WHERE email = ?', [data.email]);
       if (!user) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }

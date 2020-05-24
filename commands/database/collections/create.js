@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 const uuidv4 = require('uuid/v4');
 const parseJsonBody = require('../../../modules/parseJsonBody');
 const sendJsonResponse = require('../../../modules/sendJsonResponse');
@@ -48,7 +48,7 @@ module.exports = function ({ db }) {
           AND database_users.user_id = ?
     `;
 
-    const database = await promisify(sqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
+    const database = await promisify(rqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
 
     if (!database) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
@@ -61,14 +61,14 @@ module.exports = function ({ db }) {
           AND database_id = ?
     `;
 
-    const collection = await promisify(sqlite.getOne)(db, sqlFindCollection, [data.name, database.id]);
+    const collection = await promisify(rqlite.getOne)(db, sqlFindCollection, [data.name, database.id]);
     if (collection) {
       return sendJsonResponse(422, { errors: { name: 'collection name already exists' } }, response);
     }
 
     data.id = uuidv4();
 
-    await promisify(sqlite.run)(db, 'INSERT INTO collections (id, database_id, name, schema, date_created) VALUES (?, ?, ?, ?, ?)', [
+    await promisify(rqlite.run)(db, 'INSERT INTO collections (id, database_id, name, schema, date_created) VALUES (?, ?, ?, ?, ?)', [
       data.id, database.id, data.name, JSON.stringify(data), Date.now()
     ]);
 

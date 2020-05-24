@@ -1,5 +1,5 @@
 const { promisify } = require('util');
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 
 const sendJsonResponse = require('../modules/sendJsonResponse');
 const parseJsonBody = require('../modules/parseJsonBody');
@@ -38,7 +38,7 @@ module.exports = function ({ config, db }) {
                AND collections.database_id = (SELECT id FROM databases WHERE name = ?)
         `;
 
-        await promisify(sqlite.run)(db, sqlFindCollections, [amount, collectionName, databaseName]);
+        await promisify(rqlite.run)(db, sqlFindCollections, [amount, collectionName, databaseName]);
       });
 
       await Promise.all(promises);

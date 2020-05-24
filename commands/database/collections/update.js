@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 const axios = require('axios');
 
 const sendJsonResponse = require('../../../modules/sendJsonResponse');
@@ -33,7 +33,7 @@ async function updateCollection (db, collectionId, data) {
      WHERE id = ?
   `;
 
-  return promisify(sqlite.run)(db, sqlUpdateDatabase, [JSON.stringify(data), collectionId]);
+  return promisify(rqlite.run)(db, sqlUpdateDatabase, [JSON.stringify(data), collectionId]);
 }
 
 module.exports = function ({ db }) {
@@ -61,7 +61,7 @@ module.exports = function ({ db }) {
           AND database_users.user_id = ?
     `;
 
-    const database = await promisify(sqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
+    const database = await promisify(rqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
     if (!database) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
     }
@@ -73,7 +73,7 @@ module.exports = function ({ db }) {
           AND name = ?
     `;
 
-    const collection = await promisify(sqlite.getOne)(db, sqlFindCollections, [database.id, params.collectionName]);
+    const collection = await promisify(rqlite.getOne)(db, sqlFindCollections, [database.id, params.collectionName]);
 
     if (!collection) {
       return sendJsonResponse(404, { error: 'collection not found' }, response);

@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 const uuidv4 = require('uuid/v4');
 
 const parseJsonBody = require('../../modules/parseJsonBody');
@@ -40,18 +40,18 @@ module.exports = function ({ db }) {
       return sendJsonResponse(401, { errors: ['invalid session provided'] }, response);
     }
 
-    const existing = await promisify(sqlite.getOne)(db, 'SELECT * FROM databases WHERE name = ?', [data.name]);
+    const existing = await promisify(rqlite.getOne)(db, 'SELECT * FROM databases WHERE name = ?', [data.name]);
     if (existing) {
       return sendJsonResponse(422, { errors: { name: 'name has already been taken' } }, response);
     }
 
     data.id = uuidv4();
 
-    await promisify(sqlite.run)(db, 'INSERT INTO databases (id, name, date_created) VALUES (?, ?, ?)', [
+    await promisify(rqlite.run)(db, 'INSERT INTO databases (id, name, date_created) VALUES (?, ?, ?)', [
       data.id, data.name, Date.now()
     ]);
 
-    await promisify(sqlite.run)(db, 'INSERT INTO database_users (user_id, database_id, role, date_created) VALUES (?, ?, ?, ?)', [
+    await promisify(rqlite.run)(db, 'INSERT INTO database_users (user_id, database_id, role, date_created) VALUES (?, ?, ?, ?)', [
       session.user.id, data.id, 'owner', Date.now()
     ]);
 
