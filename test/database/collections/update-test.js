@@ -3,7 +3,7 @@ const httpRequest = require('../../helpers/httpRequest');
 const parseJsonBody = require('../../../modules/parseJsonBody');
 const reset = require('../../helpers/reset');
 const { createUserAndSession } = require('../../helpers/session');
-const server = require('../../../server');
+const server = require('../../../server')();
 const createHttpServer = require('../../helpers/createHttpServer');
 
 const createDatabase = (headers, data) =>

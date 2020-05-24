@@ -2,7 +2,7 @@ const test = require('tape');
 const httpRequest = require('../helpers/httpRequest');
 const reset = require('../helpers/reset');
 const { createUserAndSession } = require('../helpers/session');
-const server = require('../../server');
+const server = require('../../server')();
 
 test('database: create a new database -> no session', async t => {
   t.plan(2);

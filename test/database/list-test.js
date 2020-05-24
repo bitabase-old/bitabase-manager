@@ -2,7 +2,7 @@ const test = require('tape');
 const httpRequest = require('../helpers/httpRequest');
 const reset = require('../helpers/reset');
 const { createUserAndSession } = require('../helpers/session');
-const server = require('../../server');
+const server = require('../../server')();
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {

@@ -1,4 +1,5 @@
 const http = require('http');
+const path = require('path');
 const { promisify } = require('util');
 
 const righto = require('righto');
@@ -15,57 +16,63 @@ const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeade
 function migrateUp (callback) {
   const db = righto(rqlite.connect, config.dataServer);
   const driver = righto.sync(migrator, db);
-  const migrations = getMigrationsFromDirectory('./migrations');
+  const migrations = getMigrationsFromDirectory(path.resolve(__dirname, './migrations'));
   const migrated = righto(up, driver, migrations);
   migrated(callback);
 }
 
 let server;
-async function start () {
-  await promisify(migrateUp)();
+function createManager (configOverrides = {}) {
+  async function start () {
+    await promisify(migrateUp)();
 
-  const router = findMyWay({
-    defaultRoute: (request, response) => {
+    const router = findMyWay({
+      defaultRoute: (request, response) => {
+        setCrossDomainOriginHeaders(request, response);
+        response.writeHead(404);
+        response.end('Not Found');
+      }
+    });
+    router.on('OPTIONS', '*', function (request, response) {
       setCrossDomainOriginHeaders(request, response);
-      response.writeHead(404);
-      response.end('Not Found');
-    }
-  });
-  router.on('OPTIONS', '*', function (request, response) {
-    setCrossDomainOriginHeaders(request, response);
-    response.end();
-  });
+      response.end();
+    });
 
-  const db = await promisify(rqlite.connect)(config.dataServer);
+    const db = await promisify(rqlite.connect)(config.dataServer);
 
-  const services = { config, db };
+    const services = { config, db };
 
-  router.on('POST', '/v1/users', require('./commands/user/create.js')(services));
-  router.on('POST', '/v1/sessions', require('./commands/session/create.js')(services));
-  router.on('GET', '/v1/sessions/current', require('./commands/session/readCurrent.js')(services));
-  router.on('GET', '/v1/databases', require('./commands/database/list.js')(services));
-  router.on('POST', '/v1/databases', require('./commands/database/create.js')(services));
-  router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')(services));
-  router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')(services));
-  router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')(services));
-  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')(services));
-  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName/logs', require('./commands/database/collections/logs/list.js')(services));
-  router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')(services));
+    router.on('POST', '/v1/users', require('./commands/user/create.js')(services));
+    router.on('POST', '/v1/sessions', require('./commands/session/create.js')(services));
+    router.on('GET', '/v1/sessions/current', require('./commands/session/readCurrent.js')(services));
+    router.on('GET', '/v1/databases', require('./commands/database/list.js')(services));
+    router.on('POST', '/v1/databases', require('./commands/database/create.js')(services));
+    router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')(services));
+    router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')(services));
+    router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')(services));
+    router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')(services));
+    router.on('GET', '/v1/databases/:databaseName/collections/:collectionName/logs', require('./commands/database/collections/logs/list.js')(services));
+    router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')(services));
 
-  server = http.createServer((req, res) => {
-    router.lookup(req, res);
-  }).listen(config.port);
+    server = http.createServer((req, res) => {
+      router.lookup(req, res);
+    }).listen(config.port);
 
-  console.log(`[bitabase-manager] Listening on port ${config.port}`);
+    console.log(`[bitabase-manager] Listening on port ${config.port}`);
+
+    return { start, stop };
+  }
+
+  function stop () {
+    console.log('[bitabase-manager] Shutting down');
+    server && server.close();
+  }
+
+  return {
+    migrateUp,
+    start,
+    stop
+  };
 }
 
-function stop () {
-  console.log('[bitabase-manager] Shutting down');
-  server && server.close();
-}
-
-module.exports = {
-  migrateUp,
-  start,
-  stop
-};
+module.exports = createManager;

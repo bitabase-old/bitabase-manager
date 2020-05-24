@@ -1,7 +1,7 @@
 const test = require('tape');
 const httpRequest = require('../helpers/httpRequest');
 const reset = require('../helpers/reset');
-const server = require('../../server');
+const server = require('../../server')();
 
 test('user: create a new user with validation errors', async t => {
   t.plan(2);

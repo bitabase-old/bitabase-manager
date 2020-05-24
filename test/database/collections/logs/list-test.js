@@ -3,7 +3,7 @@ const httpRequest = require('../../../helpers/httpRequest');
 
 const reset = require('../../../helpers/reset');
 const { createUserAndSession } = require('../../../helpers/session');
-const server = require('../../../../server');
+const server = require('../../../../server')();
 const config = require('../../../../config');
 const createHttpServer = require('../../../helpers/createHttpServer');
 

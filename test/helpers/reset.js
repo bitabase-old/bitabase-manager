@@ -1,7 +1,6 @@
 const { promisify } = require('util');
 
 const fs = require('fs');
-const path = require('path');
 const rqlite = require('rqlite-fp');
 const righto = require('righto');
 
@@ -35,7 +34,7 @@ module.exports = async function () {
     Object.assign(config, originalConfig);
 
     if (!stopRqlite) {
-      fs.rmdirSync('~/node', {recursive: true})
+      fs.rmdirSync('~/node', { recursive: true });
 
       return rqlite.start({}, function (error, stop) {
         if (error) {
