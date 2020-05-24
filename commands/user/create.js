@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 const uuidv4 = require('uuid/v4');
 const hashText = require('pbkdf2-wrapper/hashText');
 
@@ -22,7 +22,7 @@ function validate (data) {
 async function insertUser (db, data) {
   const password = await hashText(data.password);
 
-  await promisify(sqlite.run)(db,
+  await promisify(rqlite.run)(db,
     'INSERT INTO users (id, email, password, date_created) VALUES (?, ?, ?, ?)',
     [data.id, data.email, password, Date.now()]
   );

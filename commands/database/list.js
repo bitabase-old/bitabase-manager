@@ -1,6 +1,6 @@
 const { promisify } = require('util');
 
-const sqlite = require('sqlite-fp');
+const rqlite = require('rqlite-fp');
 
 const sendJsonResponse = require('../../modules/sendJsonResponse');
 const parseSession = require('../../modules/sessions');
@@ -32,7 +32,7 @@ module.exports = function ({ db }) {
          WHERE database_users.user_id = ?
       GROUP BY databases.id, databases.name
     `;
-    const databaseRecords = await promisify(sqlite.getAll)(db, sql, [session.user.id]);
+    const databaseRecords = await promisify(rqlite.getAll)(db, sql, [session.user.id]);
 
     response.writeHead(200, {
       'Content-Type': 'application/json'

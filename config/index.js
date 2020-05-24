@@ -1,8 +1,6 @@
-const path = require('path');
-
 const config = {
   dev: {
-    dataPath: path.resolve(__dirname, '../data'),
+    dataServer: 'http://localhost:4001',
     secret: 'not-the-closest-kept-secret-in-the-world',
     port: 8081,
     allowedCrossOriginDomains: [

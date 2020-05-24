@@ -1,26 +1,28 @@
 const http = require('http');
-const path = require('path');
 const { promisify } = require('util');
 
-const mkdirp = require('mkdirp');
+const righto = require('righto');
 const findMyWay = require('find-my-way');
-const migrations = require('node-mini-migrations');
-const sqlite = require('sqlite-fp');
+const up = require('node-mini-migrations/up');
+const getMigrationsFromDirectory = require('node-mini-migrations/getMigrationsFromDirectory');
+const rqlite = require('rqlite-fp');
+
 const config = require('./config');
+const migrator = require('./migrations');
 
 const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeaders');
 
-function migrateUp () {
-  return migrations.up(
-    migrations.prepareRun(path.resolve(__dirname, './migrations'))
-  );
+function migrateUp (callback) {
+  const db = righto(rqlite.connect, config.dataServer);
+  const driver = righto.sync(migrator, db);
+  const migrations = getMigrationsFromDirectory('./migrations');
+  const migrated = righto(up, driver, migrations);
+  migrated(callback);
 }
 
 let server;
 async function start () {
-  mkdirp.sync(config.dataPath);
-
-  await migrateUp();
+  await promisify(migrateUp)();
 
   const router = findMyWay({
     defaultRoute: (request, response) => {
@@ -34,7 +36,7 @@ async function start () {
     response.end();
   });
 
-  const db = await promisify(sqlite.connect)(config.dataPath + '/manager.sqlite');
+  const db = await promisify(rqlite.connect)(config.dataServer);
 
   const services = { config, db };
 
