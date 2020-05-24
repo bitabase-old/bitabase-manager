@@ -1,3 +1,7 @@
+const { promisify } = require('util');
+
+const sqlite = require('sqlite-fp');
+
 const sendJsonResponse = require('../../../modules/sendJsonResponse');
 const parseSession = require('../../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders');
@@ -14,7 +18,7 @@ module.exports = function ({ db }) {
         WHERE name = ?
     `;
 
-    const database = await db.get(sqlFindDatabase, [params.databaseName]);
+    const database = await promisify(sqlite.getOne)(db, sqlFindDatabase, [params.databaseName]);
     if (!database) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
     }
@@ -26,7 +30,7 @@ module.exports = function ({ db }) {
           AND name = ?
     `;
 
-    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName]);
+    const collection = await promisify(sqlite.getOne)(db, sqlFindCollections, [database.id, params.collectionName]);
 
     if (!collection) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
@@ -56,7 +60,7 @@ module.exports = function ({ db }) {
           AND database_users.user_id = ?
     `;
 
-    const database = await db.get(sqlFindDatabase, [params.databaseName, session.user.id]);
+    const database = await promisify(sqlite.getOne)(db, sqlFindDatabase, [params.databaseName, session.user.id]);
     if (!database) {
       return sendJsonResponse(404, { error: 'database not found' }, response);
     }
@@ -68,7 +72,7 @@ module.exports = function ({ db }) {
           AND name = ?
     `;
 
-    const collection = await db.get(sqlFindCollections, [database.id, params.collectionName]);
+    const collection = await promisify(sqlite.getOne)(db, sqlFindCollections, [database.id, params.collectionName]);
 
     if (!collection) {
       return sendJsonResponse(404, { error: 'collection not found' }, response);

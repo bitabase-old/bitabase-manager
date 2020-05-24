@@ -1,3 +1,7 @@
+const { promisify } = require('util');
+
+const sqlite = require('sqlite-fp');
+
 const sendJsonResponse = require('../../modules/sendJsonResponse');
 const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders');
 
@@ -6,7 +10,7 @@ module.exports = function ({ db }) {
     try {
       setCrossDomainOriginHeaders(request, response);
 
-      const session = await db.get(
+      const session = await promisify(sqlite.getOne)(db,
         'SELECT * FROM sessions WHERE id = ? AND secret = ?',
         [request.headers['x-session-id'], request.headers['x-session-secret']]
       );
@@ -15,7 +19,7 @@ module.exports = function ({ db }) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }
 
-      const user = await db.get(
+      const user = await promisify(sqlite.getOne)(db,
         'SELECT * FROM users WHERE id = ? ',
         [session.user_id]
       );

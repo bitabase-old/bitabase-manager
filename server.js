@@ -1,10 +1,11 @@
 const http = require('http');
 const path = require('path');
+const { promisify } = require('util');
 
 const mkdirp = require('mkdirp');
 const findMyWay = require('find-my-way');
 const migrations = require('node-mini-migrations');
-const sqlite = require('sqlite');
+const sqlite = require('sqlite-fp');
 const config = require('./config');
 
 const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeaders');
@@ -21,8 +22,6 @@ async function start () {
 
   await migrateUp();
 
-  const db = await sqlite.open(path.resolve(config.dataPath, 'manager.sqlite'));
-
   const router = findMyWay({
     defaultRoute: (request, response) => {
       setCrossDomainOriginHeaders(request, response);
@@ -34,17 +33,22 @@ async function start () {
     setCrossDomainOriginHeaders(request, response);
     response.end();
   });
-  router.on('POST', '/v1/users', require('./commands/user/create.js')({ db }));
-  router.on('POST', '/v1/sessions', require('./commands/session/create.js')({ db }));
-  router.on('GET', '/v1/sessions/current', require('./commands/session/readCurrent.js')({ db }));
-  router.on('GET', '/v1/databases', require('./commands/database/list.js')({ db }));
-  router.on('POST', '/v1/databases', require('./commands/database/create.js')({ db }));
-  router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')({ db }));
-  router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')({ db }));
-  router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')({ db }));
-  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')({ db }));
-  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName/logs', require('./commands/database/collections/logs/list.js')({ db }));
-  router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')({ config, db }));
+
+  const db = await promisify(sqlite.connect)(config.dataPath + '/manager.sqlite');
+
+  const services = { config, db };
+
+  router.on('POST', '/v1/users', require('./commands/user/create.js')(services));
+  router.on('POST', '/v1/sessions', require('./commands/session/create.js')(services));
+  router.on('GET', '/v1/sessions/current', require('./commands/session/readCurrent.js')(services));
+  router.on('GET', '/v1/databases', require('./commands/database/list.js')(services));
+  router.on('POST', '/v1/databases', require('./commands/database/create.js')(services));
+  router.on('POST', '/v1/databases/:databaseName/collections', require('./commands/database/collections/create.js')(services));
+  router.on('PUT', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/update.js')(services));
+  router.on('GET', '/v1/databases/:databaseName/collections', require('./commands/database/collections/list.js')(services));
+  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName', require('./commands/database/collections/read.js')(services));
+  router.on('GET', '/v1/databases/:databaseName/collections/:collectionName/logs', require('./commands/database/collections/logs/list.js')(services));
+  router.on('POST', '/v1/usage-batch', require('./commands/usageBatch.js')(services));
 
   server = http.createServer((req, res) => {
     router.lookup(req, res);
