@@ -1,3 +1,6 @@
+const { promisify } = require('util');
+const sqlite = require('sqlite-fp');
+
 const sendJsonResponse = require('../modules/sendJsonResponse');
 const parseJsonBody = require('../modules/parseJsonBody');
 const setCrossDomainOriginHeaders = require('../modules/setCrossDomainOriginHeaders');
@@ -35,7 +38,7 @@ module.exports = function ({ config, db }) {
                AND collections.database_id = (SELECT id FROM databases WHERE name = ?)
         `;
 
-        await db.run(sqlFindCollections, [amount, collectionName, databaseName]);
+        await promisify(sqlite.run)(db, sqlFindCollections, [amount, collectionName, databaseName]);
       });
 
       await Promise.all(promises);
