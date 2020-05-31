@@ -27,7 +27,7 @@ function insertSession (db, { sessionId, sessionSecret, userId }) {
   );
 }
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
     try {
       setCrossDomainOriginHeaders(request, response);
@@ -44,7 +44,7 @@ module.exports = function ({ db }) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }
 
-      const passwordMatch = await verifyHash(data.password, user.password);
+      const passwordMatch = await verifyHash(data.password, user.password, config.passwordHashConfig);
       if (!passwordMatch) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }

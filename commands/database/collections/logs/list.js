@@ -12,6 +12,7 @@ async function getLogsFromAllServers (databaseName, collectionName, query) {
   const promises = config.servers.map(server => {
     return axios({
       method: 'get',
+      validateStatus: () => true,
       url: `${server}/v1/databases/${databaseName}/logs/${collectionName}${query.trim()}`
     });
   });
@@ -60,8 +61,14 @@ module.exports = function ({ db }) {
     }
 
     const parsedUrl = new URL(`https://url.test${request.url}`);
-    const logs = await getLogsFromAllServers(database.name, collection.name, parsedUrl.search);
 
-    sendJsonResponse(200, logs, response);
+    try {
+      const logs = await getLogsFromAllServers(database.name, collection.name, parsedUrl.search);
+
+      sendJsonResponse(200, logs, response);
+    } catch (error) {
+      console.log(error);
+      sendJsonResponse(500, { error: 'Unexpected Server Error' }, response);
+    }
   };
 };

@@ -19,8 +19,8 @@ function validate (data) {
   }
 }
 
-async function insertUser (db, data) {
-  const password = await hashText(data.password);
+async function insertUser (db, config, data) {
+  const password = await hashText(data.password, config.passwordHashConfig);
 
   await promisify(rqlite.run)(db,
     'INSERT INTO users (id, email, password, date_created) VALUES (?, ?, ?, ?)',
@@ -28,7 +28,7 @@ async function insertUser (db, data) {
   );
 }
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
     try {
       setCrossDomainOriginHeaders(request, response);
@@ -41,7 +41,7 @@ module.exports = function ({ db }) {
       }
 
       data.id = uuidv4();
-      await insertUser(db, data);
+      await insertUser(db, config, data);
 
       sendJsonResponse(200, { id: data.id, email: data.email }, response);
     } catch (error) {
