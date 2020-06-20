@@ -48,7 +48,9 @@ function createServerWithServices (db, config, callback) {
   }).listen(config.bindPort, config.bindHost);
 
   server.on('listening', function () {
-    console.log(`[bitabase-manager] Listening on ${config.bindHost}:${config.bindPort}`);
+    const address = server.address();
+    console.log(`[bitabase-manager] Listening on ${config.bindHost} (${address.address}:${address.port})`);
+
     callback(null, server);
   });
 }
