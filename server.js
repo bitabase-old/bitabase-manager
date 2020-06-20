@@ -55,7 +55,7 @@ function createServerWithServices (db, config, callback) {
 
 function createServer (config = {}, callback) {
   config.bindHost = config.bindHost || '0.0.0.0';
-  config.bindPort = config.bindPort || 8000;
+  config.bindPort = config.bindPort || 8001;
   config.rqliteAddr = config.rqliteAddr || 'http://0.0.0.0:4001';
   config.setCrossDomainOriginHeaders = config.setCrossDomainOriginHeaders || [];
   config.passwordHash = config.passwordHash || {
@@ -82,7 +82,7 @@ function createServer (config = {}, callback) {
       return callback(error);
     }
 
-    callback(null, {
+    callback && callback(null, {
       server,
       stop: () => {
         server.close();

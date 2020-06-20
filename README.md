@@ -18,7 +18,7 @@ bitabase-manager --help
 
 Will output the below:
 ```bash
-📦 Bitabase-Manager - v2.2.0
+📦 Bitabase-Manager - v2.2.1
 The scalable, sharded database engine.
 https://docs.bitabase.com
 

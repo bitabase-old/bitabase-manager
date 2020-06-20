@@ -47,12 +47,6 @@ function main () {
         : [],
       secret: args.secret,
       passwordHashIterations: args['password-hash-iterations']
-    }, function (error, server) {
-      if (error) {
-        throw error;
-      }
-
-      console.log(`[bitabase-manager] Listening on port ${server.address().address}:${server.address().port}`);
     });
 
     return;
