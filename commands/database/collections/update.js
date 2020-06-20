@@ -8,9 +8,7 @@ const parseJsonBody = require('../../../modules/parseJsonBody');
 const parseSession = require('../../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOriginHeaders');
 
-const config = require('../../../config');
-
-async function syncServersWithCollectionConfig (databaseName, collectionName, schema) {
+async function syncServersWithCollectionConfig (config, databaseName, collectionName, schema) {
   const promises = config.servers.map(server => {
     return axios({
       method: 'put',
@@ -36,7 +34,7 @@ async function updateCollection (db, collectionId, data) {
   return promisify(rqlite.run)(db, sqlUpdateDatabase, [JSON.stringify(data), collectionId]);
 }
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function read (request, response, params) {
     setCrossDomainOriginHeaders(request, response);
 
@@ -85,7 +83,7 @@ module.exports = function ({ db }) {
 
     await updateCollection(db, collection.id, data);
 
-    await syncServersWithCollectionConfig(database.name, collection.name, data);
+    await syncServersWithCollectionConfig(config, database.name, collection.name, data);
 
     sendJsonResponse(200, data, response);
   };

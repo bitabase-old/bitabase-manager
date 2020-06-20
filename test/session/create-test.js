@@ -1,7 +1,9 @@
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('../helpers/httpRequest');
-const reset = require('../helpers/reset');
-const server = require('../../server')();
+const createMockRqliteServer = require('../helpers/createMockRqliteServer');
+const createServer = require('../helpers/createServer');
 
 const createUser = () =>
   httpRequest('/v1/users', {
@@ -14,9 +16,8 @@ const createUser = () =>
 
 test('session: create a new session with validation errors', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/sessions', {
     method: 'post'
@@ -32,13 +33,13 @@ test('session: create a new session with validation errors', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('session: create a new session wrong user', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/sessions', {
     method: 'post',
@@ -55,13 +56,13 @@ test('session: create a new session wrong user', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('session: create a new session correct user but wrong password', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   await createUser();
 
@@ -80,13 +81,13 @@ test('session: create a new session correct user but wrong password', async t =>
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('session: create a new session correct user and password', async t => {
   t.plan(4);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   await createUser();
 
@@ -104,4 +105,5 @@ test('session: create a new session correct user and password', async t => {
   t.ok(response.data.user);
 
   await server.stop();
+  await mockRqlite.stop();
 });

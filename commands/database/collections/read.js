@@ -8,9 +8,7 @@ const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOrig
 
 const presentCollection = require('./present');
 
-const config = require('../../../config');
-
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   async function readInternal (request, response, params) {
     const sqlFindDatabase = `
         SELECT databases.*

@@ -1,7 +1,10 @@
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('../helpers/httpRequest');
-const reset = require('../helpers/reset');
-const server = require('../../server')();
+
+const createMockRqliteServer = require('../helpers/createMockRqliteServer');
+const createServer = require('../helpers/createServer');
 
 const createUser = (user) =>
   httpRequest('/v1/users', {
@@ -23,9 +26,8 @@ const createSession = (user) =>
 
 test('session: read a not existing session', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/sessions/current', {
     method: 'get',
@@ -42,13 +44,13 @@ test('session: read a not existing session', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('session: read an existing session with wrong secret', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   await createUser();
   const session = (await createSession()).data;
@@ -68,13 +70,13 @@ test('session: read an existing session with wrong secret', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('session: read an existing session with correct details', async t => {
   t.plan(4);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const user = (await createUser()).data;
   const session = (await createSession()).data;
@@ -94,4 +96,5 @@ test('session: read an existing session with correct details', async t => {
   t.notOk(response.data.user.password);
 
   await server.stop();
+  await mockRqlite.stop();
 });

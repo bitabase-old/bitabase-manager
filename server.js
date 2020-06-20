@@ -1,6 +1,5 @@
 if (process.env.NODE_ENV === 'development') {
-  require('trace');
-  require('clarify');
+  require('async-bugs');
 }
 
 const http = require('http');
@@ -12,15 +11,12 @@ const up = require('node-mini-migrations/up');
 const getMigrationsFromDirectory = require('node-mini-migrations/getMigrationsFromDirectory');
 const rqlite = require('rqlite-fp');
 
-const defaultConfig = require('./config');
 const migrator = require('./migrations');
 
 const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeaders');
 
 let server;
 function createServerWithServices (db, config, callback) {
-  const [host, port] = config.bind.split(':');
-
   const router = findMyWay({
     defaultRoute: (request, response) => {
       setCrossDomainOriginHeaders(request, response);
@@ -49,27 +45,50 @@ function createServerWithServices (db, config, callback) {
 
   server = http.createServer((req, res) => {
     router.lookup(req, res);
-  }).listen(port, host);
+  }).listen(config.bindPort, config.bindHost);
 
-  console.log(`[bitabase-manager] Listening on ${host}:${port}`);
-
-  return server;
+  server.on('listening', function () {
+    console.log(`[bitabase-manager] Listening on ${config.bindHost}:${config.bindPort}`);
+    callback(null, server);
+  });
 }
 
-function createServer (configOverrides, callback) {
-  const config = {
-    ...defaultConfig,
-    ...configOverrides
+function createServer (config = {}, callback) {
+  config.bindHost = config.bindHost || '0.0.0.0';
+  config.bindPort = config.bindPort || 8000;
+  config.rqliteAddr = config.rqliteAddr || 'http://0.0.0.0:4001';
+  config.setCrossDomainOriginHeaders = config.setCrossDomainOriginHeaders || [];
+  config.passwordHash = config.passwordHash || {
+    iterations: config.passwordHashIterations || 372791
   };
 
-  const db = righto(rqlite.connect, config.dataServer);
+  if (!config.secret) {
+    throw new Error('Config option secret is required but was not provided');
+  }
+
+  const db = righto(rqlite.connect, config.rqliteAddr, {
+    retries: 10,
+    retryDelay: 5000,
+    onRetry: () => console.log('Could not connect to: ' + config.rqliteAddr + '. Trying again...')
+  });
   const driver = righto.sync(migrator, db);
   const migrations = getMigrationsFromDirectory(path.resolve(__dirname, './migrations'));
   const migrated = righto(up, driver, migrations);
 
-  const server = righto(createServerWithServices, db, config, righto.after(migrated));
+  const createdServer = righto(createServerWithServices, db, config, righto.after(migrated));
 
-  server(callback);
+  createdServer(function (error, server) {
+    if (error) {
+      return callback(error);
+    }
+
+    callback(null, {
+      server,
+      stop: () => {
+        server.close();
+      }
+    });
+  });
 }
 
 module.exports = createServer;

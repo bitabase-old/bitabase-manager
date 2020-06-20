@@ -20,7 +20,7 @@ function validate (data) {
 }
 
 async function insertUser (db, config, data) {
-  const password = await hashText(data.password, config.passwordHashConfig);
+  const password = await hashText(data.password, config.passwordHash);
 
   await promisify(rqlite.run)(db,
     'INSERT INTO users (id, email, password, date_created) VALUES (?, ?, ?, ?)',

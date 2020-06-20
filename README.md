@@ -8,6 +8,51 @@
 
 This is a very early attempt at an accounts management service.
 
+## Getting Started
+### From the CLI
+Running the following:
+```bash
+npm install --global bitabase-manager
+bitabase-manager --help
+```
+
+Will output the below:
+```bash
+📦 Bitabase-Manager - v2.2.0
+The scalable, sharded database engine.
+https://docs.bitabase.com
+
+The following commands and arguments are available when starting Bitabase
+
+Commands:
+  start                                    Start the bitabase manager stack
+    --bind-host                            Hostname to bind server to (default: 0.0.0.0)
+    --bind-port                            Port to bind server to (default: 8001)
+    --rqlite-addr                          Path to contact rqlite
+    --secret                               The internal request secret
+    --allow-cross-origin-domain            Allow a domain to bypass cross origin domain controls
+    --password-hash-iterations             The iterations for the password hashing algorithm to use (default: 372791)
+
+No command specified
+```
+
+You can start a bitabase server by running:
+
+```bash
+bitabase-manager start
+```
+
+### From NodeJS
+```javascript
+const bitabaseServer = require('bitabase-manager/server');
+
+const server = bitabaseManager({
+  bindHost: '0.0.0.0'
+});
+
+server.start();
+```
+
 ## Endpoints
 
 <table>

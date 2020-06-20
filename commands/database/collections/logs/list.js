@@ -6,9 +6,7 @@ const sendJsonResponse = require('../../../../modules/sendJsonResponse');
 const parseSession = require('../../../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../../../modules/setCrossDomainOriginHeaders');
 
-const config = require('../../../../config');
-
-async function getLogsFromAllServers (databaseName, collectionName, query) {
+async function getLogsFromAllServers (config, databaseName, collectionName, query) {
   const promises = config.servers.map(server => {
     return axios({
       method: 'get',
@@ -23,7 +21,7 @@ async function getLogsFromAllServers (databaseName, collectionName, query) {
   });
 }
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function list (request, response, params) {
     setCrossDomainOriginHeaders(request, response);
 
@@ -63,7 +61,7 @@ module.exports = function ({ db }) {
     const parsedUrl = new URL(`https://url.test${request.url}`);
 
     try {
-      const logs = await getLogsFromAllServers(database.name, collection.name, parsedUrl.search);
+      const logs = await getLogsFromAllServers(config, database.name, collection.name, parsedUrl.search);
 
       sendJsonResponse(200, logs, response);
     } catch (error) {

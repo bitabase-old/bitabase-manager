@@ -1,14 +1,16 @@
 const test = require('tape');
+
+const righto = require('righto');
+
 const httpRequest = require('../helpers/httpRequest');
-const reset = require('../helpers/reset');
+const createMockRqliteServer = require('../helpers/createMockRqliteServer');
+const createServer = require('../helpers/createServer');
 const { createUserAndSession } = require('../helpers/session');
-const server = require('../../server')();
 
 test('database: create a new database -> no session', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/databases', {
     method: 'post',
@@ -24,13 +26,13 @@ test('database: create a new database -> no session', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: create a new database -> no post body', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -43,13 +45,13 @@ test('database: create a new database -> no post body', async t => {
   t.ok(response.data.errors.body, 'no post body was provided');
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: create a new database', async t => {
   t.plan(3);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -67,13 +69,13 @@ test('database: create a new database', async t => {
   t.equal(response.data.name, 'testing');
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: create a new database -> duplicate name', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -97,4 +99,5 @@ test('database: create a new database -> duplicate name', async t => {
   t.equal(response.data.errors.name, 'name has already been taken');
 
   await server.stop();
+  await mockRqlite.stop();
 });

@@ -1,8 +1,11 @@
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('./helpers/httpRequest');
 const { createUserAndSession } = require('./helpers/session');
-const reset = require('./helpers/reset');
-const server = require('../server')();
+
+const createMockRqliteServer = require('./helpers/createMockRqliteServer');
+const createServer = require('./helpers/createServer');
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {
@@ -24,9 +27,8 @@ const createCollection = (headers, database = 'testdb', data) =>
 
 test('usageBatch: send batch -> database not exist', async t => {
   t.plan(3);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const firstSession = await createUserAndSession();
   await createDatabase(firstSession.asHeaders);
@@ -35,7 +37,7 @@ test('usageBatch: send batch -> database not exist', async t => {
   const response = await httpRequest('/v1/usage-batch', {
     method: 'post',
     headers: {
-      'X-Internal-Secret': 'not-the-closest-kept-secret-in-the-world'
+      'X-Internal-Secret': 'the-secret-number'
     },
     data: {
       'notfound:testcl:read': 50
@@ -52,13 +54,13 @@ test('usageBatch: send batch -> database not exist', async t => {
   t.equal(response.status, 200);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('usageBatch: send batch for one database', async t => {
   t.plan(3);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const firstSession = await createUserAndSession();
   await createDatabase(firstSession.asHeaders);
@@ -67,7 +69,7 @@ test('usageBatch: send batch for one database', async t => {
   const response = await httpRequest('/v1/usage-batch', {
     method: 'post',
     headers: {
-      'X-Internal-Secret': 'not-the-closest-kept-secret-in-the-world'
+      'X-Internal-Secret': 'the-secret-number'
     },
     data: {
       'testdb:testcl:read': 50,
@@ -85,13 +87,13 @@ test('usageBatch: send batch for one database', async t => {
   t.equal(response.status, 200);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('usageBatch: send batch with two databases', async t => {
   t.plan(5);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const firstSession = await createUserAndSession();
   await createDatabase(firstSession.asHeaders);
@@ -104,7 +106,7 @@ test('usageBatch: send batch with two databases', async t => {
   const response = await httpRequest('/v1/usage-batch', {
     method: 'post',
     headers: {
-      'X-Internal-Secret': 'not-the-closest-kept-secret-in-the-world'
+      'X-Internal-Secret': 'the-secret-number'
     },
     data: {
       'testdb:testcl:read': 50,
@@ -131,4 +133,5 @@ test('usageBatch: send batch with two databases', async t => {
   t.equal(response.status, 200);
 
   await server.stop();
+  await mockRqlite.stop();
 });

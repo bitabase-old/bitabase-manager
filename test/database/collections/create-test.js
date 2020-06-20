@@ -1,8 +1,9 @@
 const test = require('tape');
+const righto = require('righto');
 const httpRequest = require('../../helpers/httpRequest');
-const reset = require('../../helpers/reset');
+const createMockRqliteServer = require('../../helpers/createMockRqliteServer');
+const createServer = require('../../helpers/createServer');
 const { createUserAndSession } = require('../../helpers/session');
-const server = require('../../../server')();
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {
@@ -15,9 +16,8 @@ const createDatabase = (headers, data) =>
 
 test('database collections: create a new collection -> no session', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/databases/unknown/collections', {
     method: 'post',
@@ -33,13 +33,13 @@ test('database collections: create a new collection -> no session', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: create a new collection -> no database', async t => {
   t.plan(1);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -54,13 +54,13 @@ test('database collections: create a new collection -> no database', async t => 
   t.equal(response.status, 404);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: create a new collection -> no post body', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -73,13 +73,13 @@ test('database collections: create a new collection -> no post body', async t =>
   t.equal(response.data.errors.body, 'no post body was provided');
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: create a new collection', async t => {
   t.plan(3);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -98,13 +98,13 @@ test('database collections: create a new collection', async t => {
   t.equal(response.data.name, 'testingcollection');
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: create a new collection -> duplicate', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -129,4 +129,5 @@ test('database collections: create a new collection -> duplicate', async t => {
   t.equal(secondCollection.data.errors.name, 'collection name already exists');
 
   await server.stop();
+  await mockRqlite.stop();
 });

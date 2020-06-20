@@ -1,10 +1,14 @@
+const http = require('http');
+
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('../../helpers/httpRequest');
 const parseJsonBody = require('../../../modules/parseJsonBody');
-const reset = require('../../helpers/reset');
+const createMockRqliteServer = require('../../helpers/createMockRqliteServer');
+const createServer = require('../../helpers/createServer');
+
 const { createUserAndSession } = require('../../helpers/session');
-const server = require('../../../server')();
-const createHttpServer = require('../../helpers/createHttpServer');
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {
@@ -17,9 +21,8 @@ const createDatabase = (headers, data) =>
 
 test('database collections: update a collection -> no session', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/databases/unknown/collections/unknown', {
     method: 'put',
@@ -35,13 +38,13 @@ test('database collections: update a collection -> no session', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: update a collection -> no database', async t => {
   t.plan(1);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -56,13 +59,13 @@ test('database collections: update a collection -> no database', async t => {
   t.equal(response.status, 404);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: update a collection -> no post body', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -75,19 +78,23 @@ test('database collections: update a collection -> no post body', async t => {
   t.equal(response.data.error, 'no post body was provided');
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database collections: update existing collection', async t => {
   t.plan(5);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  const mockServer = createHttpServer(async function (request, response) {
+  const mockServer = http.createServer(function (request, response) {
     response.writeHead(404);
     response.end();
-  }, 8000);
+  });
 
-  await mockServer.start();
-  await server.start();
+  mockServer.listen(8005);
+
+  const server = await createServer({
+    servers: ['http://0.0.0.0:8005']
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -114,8 +121,9 @@ test('database collections: update existing collection', async t => {
     headers: session.asHeaders
   });
 
-  await mockServer.stop();
+  await mockServer.close();
   await server.stop();
+  await mockRqlite.stop();
 
   t.equal(createdCollection.status, 201);
 
@@ -128,15 +136,18 @@ test('database collections: update existing collection', async t => {
 
 test('database collections: update existing collection can not change name', async t => {
   t.plan(2);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  const mockServer = createHttpServer(async function (request, response) {
+  const mockServer = http.createServer(function (request, response) {
     response.writeHead(404);
     response.end();
-  }, 8000);
+  });
 
-  await mockServer.start();
-  await server.start();
+  mockServer.listen(8005);
+
+  const server = await createServer({
+    servers: ['http://0.0.0.0:8005']
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -158,8 +169,9 @@ test('database collections: update existing collection can not change name', asy
     }
   });
 
-  await mockServer.stop();
+  await mockServer.close();
   await server.stop();
+  await mockRqlite.stop();
 
   t.equal(updatedCollection.status, 400);
   t.ok(updatedCollection.data.name, 'name can not be changed');
@@ -167,18 +179,21 @@ test('database collections: update existing collection can not change name', asy
 
 test('database collections: update existing collection and sync server successfully', async t => {
   t.plan(7);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  const mockServer = createHttpServer(async function (request, response) {
+  const mockServer = http.createServer(async function (request, response) {
     const body = await parseJsonBody(request);
     t.equal(request.url, '/v1/databases/testing/collections/testingcollection');
     t.equal(body.name, 'testingcollection');
     t.deepEqual(body.presenters, ['{...body one: 1}']);
     response.end();
-  }, 8000);
-  await mockServer.start();
+  });
 
-  await server.start();
+  mockServer.listen(8005);
+
+  const server = await createServer({
+    servers: ['http://0.0.0.0:8005']
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -200,8 +215,9 @@ test('database collections: update existing collection and sync server successfu
     }
   });
 
-  await mockServer.stop();
+  await mockServer.close();
   await server.stop();
+  await mockRqlite.stop();
 
   t.equal(createdCollection.status, 201);
 
@@ -212,15 +228,18 @@ test('database collections: update existing collection and sync server successfu
 
 test('database collections: update existing collection and sync server with failure', async t => {
   t.plan(4);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  const mockServer = createHttpServer(async function (request, response) {
+  const mockServer = http.createServer(function (request, response) {
     response.writeHead(404);
     response.end();
-  }, 8000);
-  await mockServer.start();
+  });
 
-  await server.start();
+  mockServer.listen(8005);
+
+  const server = await createServer({
+    servers: ['http://0.0.0.0:8005']
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -242,8 +261,9 @@ test('database collections: update existing collection and sync server with fail
     }
   });
 
-  await mockServer.stop();
+  await mockServer.close();
   await server.stop();
+  await mockRqlite.stop();
 
   t.equal(createdCollection.status, 201);
 

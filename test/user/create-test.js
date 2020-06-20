@@ -1,13 +1,15 @@
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('../helpers/httpRequest');
-const reset = require('../helpers/reset');
-const server = require('../../server')();
+
+const createMockRqliteServer = require('../helpers/createMockRqliteServer');
+const createServer = require('../helpers/createServer');
 
 test('user: create a new user with validation errors', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/users', {
     method: 'post'
@@ -23,13 +25,13 @@ test('user: create a new user with validation errors', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('user: create a new user', async t => {
   t.plan(3);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/users', {
     method: 'post',
@@ -44,4 +46,5 @@ test('user: create a new user', async t => {
   t.equal(response.data.email, 'test@example.com');
 
   await server.stop();
+  await mockRqlite.stop();
 });

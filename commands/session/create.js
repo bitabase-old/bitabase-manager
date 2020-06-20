@@ -44,7 +44,7 @@ module.exports = function ({ db, config }) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }
 
-      const passwordMatch = await verifyHash(data.password, user.password, config.passwordHashConfig);
+      const passwordMatch = await verifyHash(data.password, user.password, config.passwordHash);
       if (!passwordMatch) {
         return sendJsonResponse(401, { error: 'unauthorised' }, response);
       }

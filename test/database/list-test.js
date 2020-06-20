@@ -1,8 +1,11 @@
 const test = require('tape');
+const righto = require('righto');
+
 const httpRequest = require('../helpers/httpRequest');
-const reset = require('../helpers/reset');
+const createMockRqliteServer = require('../helpers/createMockRqliteServer');
+const createServer = require('../helpers/createServer');
+
 const { createUserAndSession } = require('../helpers/session');
-const server = require('../../server')();
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {
@@ -15,9 +18,8 @@ const createDatabase = (headers, data) =>
 
 test('database: list databases -> no session', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const response = await httpRequest('/v1/databases');
 
@@ -28,13 +30,13 @@ test('database: list databases -> no session', async t => {
   });
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: list databases -> not found', async t => {
   t.plan(2);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
 
@@ -47,13 +49,13 @@ test('database: list databases -> not found', async t => {
   t.equal(response.data.length, 0);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: list databases', async t => {
   t.plan(9);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -74,13 +76,13 @@ test('database: list databases', async t => {
   t.ok(response.data[0].date_created);
 
   await server.stop();
+  await mockRqlite.stop();
 });
 
 test('database: list databases -> only mine', async t => {
   t.plan(9);
-  await reset();
-
-  await server.start();
+  const mockRqlite = await righto(createMockRqliteServer);
+  const server = await createServer();
 
   const firstSession = await createUserAndSession();
   await createDatabase(firstSession.asHeaders);
@@ -104,4 +106,5 @@ test('database: list databases -> only mine', async t => {
   t.ok(response.data[0].date_created);
 
   await server.stop();
+  await mockRqlite.stop();
 });

@@ -1,11 +1,12 @@
-const test = require('tape');
-const httpRequest = require('../../../helpers/httpRequest');
+const http = require('http');
 
-const reset = require('../../../helpers/reset');
+const test = require('tape');
+const righto = require('righto');
+
+const httpRequest = require('../../../helpers/httpRequest');
 const { createUserAndSession } = require('../../../helpers/session');
-const server = require('../../../../server')();
-const config = require('../../../../config');
-const createHttpServer = require('../../../helpers/createHttpServer');
+const createServer = require('../../../helpers/createServer');
+const createMockRqliteServer = require('../../../helpers/createMockRqliteServer');
 
 const createDatabase = (headers, data) =>
   httpRequest('/v1/databases', {
@@ -25,23 +26,34 @@ const createCollection = (headers, data) =>
     }
   });
 
-function createMockServer (i = 8000) {
-  return createHttpServer(async function (request, response) {
+function createMockServer (i = 8100) {
+  const server = http.createServer(async function (request, response) {
     response.writeHead(200);
     response.end(JSON.stringify([{
       a: 1
     }]));
   }, i);
+
+  const promise = new Promise((resolve) => {
+    server.on('listening', () => {
+      resolve(server);
+    });
+  });
+
+  server.listen(i);
+
+  return promise;
 }
 
 test('database collections: list logs', async t => {
   t.plan(1);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  const mockServer = createMockServer();
-  await mockServer.start();
+  const mockServer = await createMockServer();
 
-  await server.start();
+  const server = await createServer({
+    servers: ['http://0.0.0.0:8100']
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -52,7 +64,8 @@ test('database collections: list logs', async t => {
     headers: session.asHeaders
   });
 
-  await mockServer.stop();
+  await mockRqlite.stop();
+  await mockServer.close();
   await server.stop();
 
   t.equal(response.data[0].a, 1);
@@ -60,17 +73,16 @@ test('database collections: list logs', async t => {
 
 test('database collections: list logs multiple servers', async t => {
   t.plan(2);
-  await reset();
+  const mockRqlite = await righto(createMockRqliteServer);
 
-  config.servers = [
-    'http://localhost:8001',
-    'http://localhost:8002'
-  ];
-  const mockServer1 = createMockServer(8001);
-  const mockServer2 = createMockServer(8002);
-  await mockServer1.start();
-  await mockServer2.start();
-  await server.start();
+  const mockServer1 = await createMockServer(8101);
+  const mockServer2 = await createMockServer(8102);
+  const server = await createServer({
+    servers: [
+      'http://0.0.0.0:8101',
+      'http://0.0.0.0:8102'
+    ]
+  });
 
   const session = await createUserAndSession();
   await createDatabase(session.asHeaders);
@@ -81,8 +93,9 @@ test('database collections: list logs multiple servers', async t => {
     headers: session.asHeaders
   });
 
-  await mockServer1.stop();
-  await mockServer2.stop();
+  await mockServer1.close();
+  await mockServer2.close();
+  await mockRqlite.stop();
   await server.stop();
 
   t.equal(response.data[0].a, 1);
