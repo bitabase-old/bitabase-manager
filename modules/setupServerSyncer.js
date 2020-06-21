@@ -33,29 +33,30 @@ async function setupServerSyncer (config, type) {
   }
 
   async function syncServers (type, servers) {
-    config[type] = config[type] || [];
+    config[type + 's'] = config[type + 's'] || [];
 
     servers.forEach(server => {
       const withinPingLimits = Date.now() - server.lastPing < 15000;
-      if (!config[type].includes(server.host) && withinPingLimits) {
-        config[type].push(server.host);
-        console.log(`Discovered new server in data store: [${server.host}]`);
+
+      if (!config[type + 's'].includes(server.host) && withinPingLimits) {
+        config[type + 's'].push(server.host);
+        console.log(`Discovered new ${type} server in data store: [${server.host}]`);
       }
 
-      if (config[type].includes(server.host) && !withinPingLimits) {
-        const index = config[type].indexOf(server.host);
-        if (index !== -1) config[type].splice(index, 1);
+      if (config[type + 's'].includes(server.host) && !withinPingLimits) {
+        const index = config[type + 's'].indexOf(server.host);
+        if (index !== -1) config[type + 's'].splice(index, 1);
 
-        console.log(`Removed server as last ping longer than 15 seconds: [${server.host}]`);
+        console.log(`Removed ${type} server as last ping longer than 15 seconds: [${server.host}]`);
       }
     });
 
-    config[type].forEach(serverHost => {
+    config[type + 's'].forEach(serverHost => {
       if (!servers.find(server => server.host === serverHost)) {
-        const index = config[type].indexOf(serverHost);
-        if (index !== -1) config[type].splice(index, 1);
+        const index = config[type + 's'].indexOf(serverHost);
+        if (index !== -1) config[type + 's'].splice(index, 1);
 
-        console.log(`Removed server no longer in data store: [${serverHost}]`);
+        console.log(`Removed ${type} server no longer in data store: [${serverHost}]`);
       }
     });
   }
