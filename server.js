@@ -68,7 +68,7 @@ function createServer (config = {}, callback) {
     throw new Error('Config option secret is required but was not provided');
   }
 
-  const serverSyncerPromise = setupServerSyncer(config);
+  const serverSyncerPromise = setupServerSyncer(config, 'manager');
 
   const db = righto(rqlite.connect, config.rqliteAddr, {
     retries: 10,
