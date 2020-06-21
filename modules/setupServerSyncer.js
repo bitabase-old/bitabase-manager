@@ -1,7 +1,5 @@
 const { promisify } = require('util');
 
-const os = require('os');
-
 const rqlite = {
   connect: promisify(require('rqlite-fp/connect')),
   getAll: promisify(require('rqlite-fp/getAll')),
@@ -15,6 +13,8 @@ async function setupServerSyncer (config, type) {
     return;
   }
 
+  const hostAddress = `http://${config.bindHost}:${config.bindPort}`;
+
   const dbConnection = await rqlite.connect(config.rqliteAddr, {
     retries: 3,
     retryDelay: 250,
@@ -24,11 +24,11 @@ async function setupServerSyncer (config, type) {
   await rqlite.run(dbConnection, 'CREATE TABLE IF NOT EXISTS servers (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, host TEXT, lastPing INTEGER)');
 
   async function pingSelfInDatabase () {
-    const server = await rqlite.getOne(dbConnection, 'SELECT * FROM servers WHERE type = ? AND host = ?', [type, os.hostname()]);
+    const server = await rqlite.getOne(dbConnection, 'SELECT * FROM servers WHERE type = ? AND host = ?', [type, hostAddress]);
     if (!server) {
-      await rqlite.run(dbConnection, 'INSERT INTO servers (type, host, lastPing) VALUES (?, ?, ?)', [type, os.hostname(), Date.now()]);
+      await rqlite.run(dbConnection, 'INSERT INTO servers (type, host, lastPing) VALUES (?, ?, ?)', [type, hostAddress, Date.now()]);
     } else {
-      await rqlite.run(dbConnection, 'UPDATE servers SET lastPing = ? WHERE type = ? AND host = ?', [type, Date.now(), os.hostname()]);
+      await rqlite.run(dbConnection, 'UPDATE servers SET lastPing = ? WHERE type = ? AND host = ?', [Date.now(), type, hostAddress]);
     }
   }
 
