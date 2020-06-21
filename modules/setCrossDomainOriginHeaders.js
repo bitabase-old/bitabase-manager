@@ -1,6 +1,4 @@
-const config = require('../config');
-
-const setCrossDomainOriginHeaders = (request, response) => {
+const setCrossDomainOriginHeaders = (config, request, response) => {
   if (config.allowedCrossOriginDomains.includes(request.headers.origin)) {
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Headers', [

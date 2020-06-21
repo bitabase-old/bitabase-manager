@@ -14,18 +14,19 @@ const rqlite = require('rqlite-fp');
 const migrator = require('./migrations');
 
 const setCrossDomainOriginHeaders = require('./modules/setCrossDomainOriginHeaders');
+const setupServerSyncer = require('./modules/setupServerSyncer');
 
 let server;
 function createServerWithServices (db, config, callback) {
   const router = findMyWay({
     defaultRoute: (request, response) => {
-      setCrossDomainOriginHeaders(request, response);
+      setCrossDomainOriginHeaders(config, request, response);
       response.writeHead(404);
       response.end('Not Found');
     }
   });
   router.on('OPTIONS', '*', function (request, response) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
     response.end();
   });
 
@@ -58,8 +59,7 @@ function createServerWithServices (db, config, callback) {
 function createServer (config = {}, callback) {
   config.bindHost = config.bindHost || '0.0.0.0';
   config.bindPort = config.bindPort || 8001;
-  config.rqliteAddr = config.rqliteAddr || 'http://0.0.0.0:4001';
-  config.setCrossDomainOriginHeaders = config.setCrossDomainOriginHeaders || [];
+  config.allowedCrossOriginDomains = config.setCrossDomainOriginHeaders || [];
   config.passwordHash = config.passwordHash || {
     iterations: config.passwordHashIterations || 372791
   };
@@ -67,6 +67,8 @@ function createServer (config = {}, callback) {
   if (!config.secret) {
     throw new Error('Config option secret is required but was not provided');
   }
+
+  const serverSyncerPromise = setupServerSyncer(config);
 
   const db = righto(rqlite.connect, config.rqliteAddr, {
     retries: 10,
@@ -86,7 +88,9 @@ function createServer (config = {}, callback) {
 
     callback && callback(null, {
       server,
-      stop: () => {
+      stop: async () => {
+        const serverSyncer = await serverSyncerPromise;
+        serverSyncer && serverSyncer.stop && serverSyncer.stop();
         server.close();
       }
     });

@@ -30,7 +30,7 @@ function insertSession (db, { sessionId, sessionSecret, userId }) {
 module.exports = function ({ db, config }) {
   return async function (request, response, params) {
     try {
-      setCrossDomainOriginHeaders(request, response);
+      setCrossDomainOriginHeaders(config, request, response);
 
       const data = await parseJsonBody(request);
 

@@ -23,7 +23,7 @@ async function getLogsFromAllServers (config, databaseName, collectionName, quer
 
 module.exports = function ({ db, config }) {
   return async function list (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const session = await parseSession(db, request);
 

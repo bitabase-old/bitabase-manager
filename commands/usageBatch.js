@@ -8,7 +8,7 @@ const setCrossDomainOriginHeaders = require('../modules/setCrossDomainOriginHead
 module.exports = function ({ config, db }) {
   return async function (request, response, params) {
     try {
-      setCrossDomainOriginHeaders(request, response);
+      setCrossDomainOriginHeaders(config, request, response);
 
       if (request.headers['x-internal-secret'] !== config.secret) {
         throw new Error('Not allowed');

@@ -8,9 +8,9 @@ const setCrossDomainOriginHeaders = require('../../../modules/setCrossDomainOrig
 
 const presentCollection = require('./present');
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const session = await parseSession(db, request);
 

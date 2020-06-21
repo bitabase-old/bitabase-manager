@@ -23,9 +23,9 @@ function validate (data) {
   }
 }
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const data = await parseJsonBody(request);
     const session = await parseSession(db, request);

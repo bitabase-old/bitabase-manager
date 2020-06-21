@@ -6,9 +6,9 @@ const sendJsonResponse = require('../../modules/sendJsonResponse');
 const parseSession = require('../../modules/sessions');
 const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders');
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const session = await parseSession(db, request);
 

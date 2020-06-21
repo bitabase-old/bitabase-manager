@@ -36,7 +36,7 @@ async function updateCollection (db, collectionId, data) {
 
 module.exports = function ({ db, config }) {
   return async function read (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const data = await parseJsonBody(request);
 

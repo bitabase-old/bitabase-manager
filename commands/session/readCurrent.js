@@ -5,10 +5,10 @@ const rqlite = require('rqlite-fp');
 const sendJsonResponse = require('../../modules/sendJsonResponse');
 const setCrossDomainOriginHeaders = require('../../modules/setCrossDomainOriginHeaders');
 
-module.exports = function ({ db }) {
+module.exports = function ({ db, config }) {
   return async function (request, response, params) {
     try {
-      setCrossDomainOriginHeaders(request, response);
+      setCrossDomainOriginHeaders(config, request, response);
 
       const session = await promisify(rqlite.getOne)(db,
         'SELECT * FROM sessions WHERE id = ? AND secret = ?',

@@ -5,6 +5,7 @@ const finalStream = require('final-stream');
 function doQuery (db, url, response) {
   sqlite.getAll(db, url.searchParams.get('q'), function (error, results) {
     if (error) {
+      console.log(error);
       throw new Error('errors not handled in mock rqlite server');
     }
 

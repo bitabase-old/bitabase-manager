@@ -41,7 +41,7 @@ module.exports = function ({ db, config }) {
   }
 
   async function read (request, response, params) {
-    setCrossDomainOriginHeaders(request, response);
+    setCrossDomainOriginHeaders(config, request, response);
 
     const session = await parseSession(db, request);
 
