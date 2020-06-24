@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 
 const rqlite = require('rqlite-fp');
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require('uuid').v4;
 const verifyHash = require('pbkdf2-wrapper/verifyHash');
 
 const createRandomString = require('../../modules/createRandomString');

@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 
 const rqlite = require('rqlite-fp');
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require('uuid').v4;
 const hashText = require('pbkdf2-wrapper/hashText');
 
 const parseJsonBody = require('../../modules/parseJsonBody');
