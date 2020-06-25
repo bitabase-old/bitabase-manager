@@ -58,6 +58,7 @@ function createServerWithServices (db, config, callback) {
 
 function createServer (config = {}, callback) {
   config.bindHost = config.bindHost || '0.0.0.0';
+  config.advertiseHost = config.advertiseHost || config.bindHost;
   config.bindPort = config.bindPort || 8001;
   config.allowedCrossOriginDomains = config.setCrossDomainOriginHeaders || [];
   config.passwordHash = config.passwordHash || {
