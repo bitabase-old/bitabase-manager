@@ -1,5 +1,5 @@
 function presentCollection (record) {
-  record.schema = record.schema && record.schema.replace(/\\"/g, '"');
+  record.schema = typeof record.schema === 'object' ? record.schema : record.schema && record.schema.replace(/\\"/g, '"');
 
   const collectionConfig = typeof record.schema === 'object' ? record.schema : JSON.parse(record.schema);
   delete collectionConfig.name;
@@ -7,6 +7,7 @@ function presentCollection (record) {
   return {
     name: record.name,
     ...collectionConfig,
+    schema: record.schema,
     statistics: {
       total_reads: record.total_reads,
       total_space: record.total_space,

@@ -37,7 +37,7 @@ module.exports = function ({ db, config }) {
     response.writeHead(200, {
       'Content-Type': 'application/json'
     });
-    response.end(JSON.stringify(collection));
+    response.end(JSON.stringify(presentCollection(collection)));
   }
 
   async function read (request, response, params) {
