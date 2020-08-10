@@ -18,12 +18,12 @@ The following commands and arguments are available when starting Bitabase
 
 Commands:
   start                                    Start the bitabase manager stack
-    --advertise-host               Hostname to advertise to others (default: --bind-host)
+    --advertise-host                       Hostname to advertise to others (default: --bind-host)
     --bind-host                            Hostname to bind server to (default: 0.0.0.0)
     --bind-port                            Port to bind server to (default: 8001)
     --rqlite-addr                          Path to contact rqlite
     --secret                               The internal request secret
-    --allow-cross-origin-domain            Allow a domain to bypass cross origin domain controls
+    --allowed-cross-origin-domain          Allow a domain to bypass cross origin domain controls
     --password-hash-iterations             The iterations for the password hashing algorithm to use (default: 372791)
   `.trim() + '\n');
 }
@@ -44,8 +44,8 @@ function main () {
       bindHost: args['bind-host'],
       bindPort: args['bind-port'],
       rqliteAddr: args['rqlite-addr'],
-      setCrossDomainOriginHeaders: args['allow-cross-origin-domain']
-        ? (Array.isArray(args['allow-cross-origin-domain']) ? args['allow-cross-origin-domain'] : [args['allow-cross-origin-domain']])
+      allowedCrossOriginDomains: args['allowed-cross-origin-domain']
+        ? (Array.isArray(args['allowed-cross-origin-domain']) ? args['allowed-cross-origin-domain'] : [args['allowed-cross-origin-domain']])
         : [],
       secret: args.secret,
       passwordHashIterations: args['password-hash-iterations']
