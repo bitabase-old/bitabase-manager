@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "finalhandler": "^1.1.2",
     "find-my-way": "^3.0.5",
     "generic-errors": "^2.2.1",
